@@ -36,6 +36,25 @@ def posts(request):
     }
     return render(request, 'blog_app/posts.html', context)
 
+def search_posts(request):
+    query = request.GET.get('q', '').strip()
+    results_by_category = {}
+
+    if query:
+        matching_posts = Post.objects.filter(title__icontains=query).select_related('category')
+        
+        for post in matching_posts:
+            category_name = post.category.name if post.category else "Unsorted"
+            if category_name not in results_by_category:
+                results_by_category[category_name] = []
+            results_by_category[category_name].append(post)
+
+    context = {
+        'query': query,
+        'results_by_category': results_by_category,
+    }
+    return render(request, 'blog_app/search_results.html', context)
+
 def category(request, category_id):
     """Show all posts belonging to a specific category."""
     category = get_object_or_404(Category, id=category_id)

@@ -19,9 +19,9 @@
         <time datetime="{{ post.date|date:'Y-m-d' }}">Pubblicato il: {{ post.date|date:"d M Y H:i" }}</time>
         {% if post.category %}
           <span>&bull;</span>
-          <span class="bg-indigo-50 text-indigo-600 px-2.5 py-0.5 rounded-full font-semibold">
+          <a href="{% url 'blog_app:category' post.category.id %}" class="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 px-2.5 py-0.5 rounded-full font-semibold transition">
             {{ post.category.name }}
-          </span>
+          </a>
         {% endif %}
       </div>
     </div>
@@ -74,13 +74,13 @@
 <section class="max-w-3xl mx-auto">
   <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center justify-between">
     <span>Commenti</span>
-    <span class="text-sm font-normal text-gray-500 bg-gray-200 px-2.5 py-0.5 rounded-full">
+    <span id="comments-count" class="text-sm font-normal text-gray-500 bg-gray-200 px-2.5 py-0.5 rounded-full">
       {{ comments.count }}
     </span>
   </h3>
 
   <!-- Comments List -->
-  <div class="space-y-4 mb-8">
+  <div id="comments-container" class="space-y-4 mb-8">
     {% for comment in comments %}
       <div id="comment-card-{{ comment.id }}" class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
         
@@ -142,7 +142,7 @@
 
       </div>
     {% empty %}
-      <div class="bg-white rounded-xl border border-dashed border-gray-300 p-6 text-center text-sm text-gray-400">
+      <div id="empty-comments-msg" class="bg-white rounded-xl border border-dashed border-gray-300 p-6 text-center text-sm text-gray-400">
         Ancora nessun commento. Sii il primo a commentare!
       </div>
     {% endfor %}
@@ -219,7 +219,7 @@
     }
   }
 
-  // Elimina il commento via AJAX e rimuove il blocco HTML
+  // Elimina il commento via AJAX, rimuove il blocco HTML e aggiorna il conteggio
   async function deleteComment(btn, id) {
     if (!confirm('Sei sicuro di voler eliminare questo commento?')) return;
 
@@ -235,7 +235,28 @@
       const data = await response.json();
 
       if (response.ok && data.status === 'ok') {
+        // Rimuove la card del commento
         document.getElementById(`comment-card-${id}`)?.remove();
+
+        // Aggiorna il contatore dei commenti
+        const countEl = document.getElementById('comments-count');
+        if (countEl) {
+          const currentCount = parseInt(countEl.textContent, 10) || 0;
+          const newCount = Math.max(0, currentCount - 1);
+          countEl.textContent = newCount;
+
+          // Se i commenti sono finiti, mostra il messaggio di fallback
+          if (newCount === 0) {
+            const container = document.getElementById('comments-container');
+            if (container) {
+              container.innerHTML = `
+                <div id="empty-comments-msg" class="bg-white rounded-xl border border-dashed border-gray-300 p-6 text-center text-sm text-gray-400">
+                  Ancora nessun commento. Sii il primo a commentare!
+                </div>
+              `;
+            }
+          }
+        }
       } else {
         alert(data.message || 'Errore durante l\'eliminazione.');
       }
