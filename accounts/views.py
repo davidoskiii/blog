@@ -1,20 +1,16 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
+from .forms import CustomLoginForm, CustomRegisterForm
 
 def register(request):
-    """Register a new user."""
-    if request.method != 'POST':
-        # Display blank registration form
-        form = UserCreationForm()
-    else:
-        # Process completed form
-        form = UserCreationForm(data=request.POST)
+    if request.method == 'POST':
+        form = CustomRegisterForm(data=request.POST)
         if form.is_valid():
             new_user = form.save()
-            # Log the user in automatically after registration
             login(request, new_user)
             return redirect('blog_app:posts')
-
-    context = {'form': form}
-    return render(request, 'registration/register.html', context)
+    else:
+        form = CustomRegisterForm()
+        
+    return render(request, 'registration/register.html', {'form': form})

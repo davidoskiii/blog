@@ -2,24 +2,42 @@
 
 {% block content %}
 
-<h2>Modifica Categoria: {{ category.name }}</h2>
+<a href="{% url 'blog_app:category' category.id %}" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-indigo-600 mb-6 transition">
+  &larr; Torna alla Categoria
+</a>
 
-<!-- Form to Save Changes -->
-<form action="{% url 'blog_app:edit_category' category.id %}" method="post">
-    {% csrf_token %}
-    {{ form.as_div }}
-    <button name="submit">Salva modifiche</button>
-</form>
+<div class="max-w-xl mx-auto bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm">
+  <h2 class="text-2xl font-extrabold text-gray-900 mb-6">Modifica Categoria: {{ category.name }}</h2>
 
-<hr>
+  <!-- Form per Salvare le Modifiche -->
+  <form action="{% url 'blog_app:edit_category' category.id %}" method="post" class="space-y-5">
+      {% csrf_token %}
+      
+      <div class="space-y-4">
+        {{ form.as_div }}
+      </div>
 
-<!-- Form to Delete Category -->
-<form action="{% url 'blog_app:delete_category' category.id %}" method="post" onsubmit="return confirm('Sei sicuro di voler eliminare questa categoria? I post diventeranno Unsorted.');">
-    {% csrf_token %}
-    <button type="submit" style="color: red;">Elimina categoria</button>
-</form>
+      <div class="pt-4 flex items-center justify-between border-t border-gray-100">
+        <!-- Form per Eliminare la Categoria -->
+        <button type="submit" form="delete-category-form" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-medium text-sm px-4 py-2 rounded-lg transition">
+          Elimina categoria
+        </button>
 
-<br>
-<a href="{% url 'blog_app:category' category.id %}">Annulla</a>
+        <div class="flex items-center space-x-3">
+          <a href="{% url 'blog_app:category' category.id %}" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 transition">
+            Annulla
+          </a>
+          <button type="submit" name="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm px-5 py-2.5 rounded-lg transition shadow-sm">
+            Salva modifiche
+          </button>
+        </div>
+      </div>
+  </form>
+
+  <!-- Form di eliminazione separato -->
+  <form id="delete-category-form" action="{% url 'blog_app:delete_category' category.id %}" method="post" onsubmit="return confirm('Sei sicuro di voler eliminare questa categoria? I post diventeranno Unsorted.');">
+      {% csrf_token %}
+  </form>
+</div>
 
 {% endblock content %}

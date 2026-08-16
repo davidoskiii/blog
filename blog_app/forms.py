@@ -7,16 +7,33 @@ class PostForm(forms.ModelForm):
         model = Post
         fields = ['title', 'category', 'text']
         labels = {
-            'title': '',
-            'text': '',
-            'category': 'Category (Optional)'
+            'title': 'Titolo',
+            'category': 'Categoria',
+            'text': 'Testo',
+        }
+        widgets = {
+            'title': forms.TextInput(attrs={
+                'class': 'w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500'
+            }),
+            'category': forms.Select(attrs={
+                'class': 'w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500'
+            }),
+            'text': forms.Textarea(attrs={
+                'rows': 5,
+                'class': 'w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500'
+            }),
         }
 
 class CategoryForm(forms.ModelForm):
     class Meta:
         model = Category
         fields = ['name']
-        labels = {'name': ''}
+        labels = {'name': 'Nome Categoria'}
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500'
+            }),
+        }
 
 class CommentForm(forms.ModelForm):
     class Meta:
@@ -24,5 +41,9 @@ class CommentForm(forms.ModelForm):
         fields = ['text']
         labels = {'text': ''}
         widgets = {
-            'text': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Scrivi un commento...'}),
+            'text': forms.Textarea(attrs={
+                'rows': 5,
+                'placeholder': "Scrivi un commento...",
+                'class': 'w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500'
+            }),
         }

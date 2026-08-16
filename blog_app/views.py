@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import user_passes_test, login_required
 from functools import wraps
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, JsonResponse
 
 from .models import Post, Category, Comment
 from .forms import PostForm, CategoryForm, CommentForm
@@ -90,6 +90,34 @@ def add_comment(request, post_id):
             comment.save()
 
     return redirect('blog_app:post', post_id=post.id)
+
+@login_required
+def edit_comment(request, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id)
+    
+    # Verifica che l'utente sia l'autore
+    if comment.author != request.user:
+        return JsonResponse({'status': 'error', 'message': 'Non autorizzato'}, status=403)
+        
+    if request.method == 'POST':
+        new_text = request.POST.get('text', '').strip()
+        if new_text:
+            comment.text = new_text
+            comment.save()
+            return JsonResponse({'status': 'ok', 'text': comment.text})
+        return JsonResponse({'status': 'error', 'message': 'Il testo non può essere vuoto'}, status=400)
+
+@login_required
+def delete_comment(request, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id)
+    
+    # Verifica che l'utente sia l'autore
+    if comment.author != request.user:
+        return JsonResponse({'status': 'error', 'message': 'Non autorizzato'}, status=403)
+        
+    if request.method == 'POST':
+        comment.delete()
+        return JsonResponse({'status': 'ok'})
 
 
 @login_required

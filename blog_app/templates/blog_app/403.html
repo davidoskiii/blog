@@ -2,13 +2,27 @@
 
 {% block content %}
 
-<div style="padding: 20px; border: 1px solid #ff4d4d; background-color: #fff2f2; border-radius: 8px; margin-top: 20px;">
-    <h2 style="color: #d9534f; margin-top: 0;">{{ error_title }}</h2>
-    <p>{{ error_message }}</p>
-    <p>Se credi si tratti di un errore, contatta l'amministratore del sito.</p>
-</div>
+<div class="max-w-2xl mx-auto my-8">
+  <div class="bg-red-50 border border-red-200 rounded-2xl p-6 sm:p-8 shadow-sm">
+    <div class="flex items-start space-x-3">
+      <div class="flex-shrink-0 text-red-500 text-xl font-bold">
+        ⚠
+      </div>
+      <div class="space-y-2">
+        <h2 class="text-xl font-bold text-red-800 tracking-tight">{{ error_title }}</h2>
+        <p class="text-sm text-red-700 leading-relaxed">{{ error_message }}</p>
+        <p class="text-xs text-red-500 pt-2 border-t border-red-100">
+          Se credi si tratti di un errore, contatta l'amministratore del sito.
+        </p>
+      </div>
+    </div>
+  </div>
 
-<br>
-<a href="{% url 'blog_app:posts' %}">&larr; Torna ai Posts</a>
+  <div class="mt-6">
+    <a href="{% url 'blog_app:posts' %}" class="inline-flex items-center text-sm font-medium text-gray-600 hover:text-indigo-600 transition">
+      &larr; Torna ai Posts
+    </a>
+  </div>
+</div>
 
 {% endblock content %}

@@ -2,64 +2,247 @@
 
 {% block content %}
 
-<h2>{{ post.title }}</h2>
-<small>Pubblicato il: {{ post.date|date:"d M Y H:i" }}</small>
-<p>{{ post.text }}</p>
+<!-- Back Button -->
+<a href="{% url 'blog_app:posts' %}" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-indigo-600 mb-6 transition">
+  &larr; Torna ai Posts
+</a>
 
+<!-- ARTICLE CARD -->
+<article class="bg-white rounded-2xl border border-gray-200 p-6 sm:p-10 shadow-sm mb-10">
+  
+  <header class="border-b border-gray-100 pb-6 mb-6 flex justify-between items-start">
+    <div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight mb-2">
+        {{ post.title }}
+      </h1>
+      <div class="flex items-center space-x-3 text-xs text-gray-500">
+        <time datetime="{{ post.date|date:'Y-m-d' }}">Pubblicato il: {{ post.date|date:"d M Y H:i" }}</time>
+        {% if post.category %}
+          <span>&bull;</span>
+          <span class="bg-indigo-50 text-indigo-600 px-2.5 py-0.5 rounded-full font-semibold">
+            {{ post.category.name }}
+          </span>
+        {% endif %}
+      </div>
+    </div>
 
-{% if user.is_superuser %}
-    <br>
-    <a href="{% url 'blog_app:edit_post' post.id %}">Modifica Post</a>
-{% endif %}
-
-<hr>
-<br>
-
-<!-- LIKES SECTION -->
-<div>
-    <strong>{{ post.total_likes }} Mi Piace</strong>
-
-    {% if user.is_authenticated %}
-        <form action="{% url 'blog_app:like_post' post.id %}" method="post" style="display:inline;">
-            {% csrf_token %}
-            {% if is_liked %}
-                <button type="submit">Non mi piace più</button>
-            {% else %}
-                <button type="submit">Mi piace</button>
-            {% endif %}
-        </form>
-    {% else %}
-        <p><em><a href="{% url 'accounts:login' %}">Accedi</a> per mettere Mi Piace.</em></p>
+    {% if user.is_superuser %}
+      <a href="{% url 'blog_app:edit_post' post.id %}" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium px-3 py-1.5 rounded-lg transition">
+        Modifica Post
+      </a>
     {% endif %}
-</div>
+  </header>
+
+  <!-- Post Body Text -->
+  <div class="prose max-w-none text-gray-700 leading-relaxed text-base whitespace-pre-line mb-8">
+    {{ post.text }}
+  </div>
+
+  <!-- LIKES BAR -->
+  <div class="pt-6 border-t border-gray-100 flex items-center justify-between">
+    <div class="flex items-center space-x-3">
+      <span class="text-sm font-semibold text-gray-700">
+        {{ post.total_likes }} Mi Piace
+      </span>
+
+      {% if user.is_authenticated %}
+        <form action="{% url 'blog_app:like_post' post.id %}" method="post" class="inline">
+          {% csrf_token %}
+          {% if is_liked %}
+            <button type="submit" class="text-xs bg-red-50 hover:bg-red-100 text-red-600 font-semibold px-3 py-1.5 rounded-lg transition border border-red-200">
+              Non mi piace più
+            </button>
+          {% else %}
+            <button type="submit" class="text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-semibold px-3 py-1.5 rounded-lg transition border border-indigo-200">
+              Mi piace
+            </button>
+          {% endif %}
+        </form>
+      {% endif %}
+    </div>
+
+    {% if not user.is_authenticated %}
+      <span class="text-xs text-gray-400">
+        <a href="{% url 'accounts:login' %}" class="text-indigo-600 hover:underline">Accedi</a> per mettere Mi Piace.
+      </span>
+    {% endif %}
+  </div>
+
+</article>
 
 <!-- COMMENTS SECTION -->
-<h3>Commenti ({{ comments.count }})</h3>
+<section class="max-w-3xl mx-auto">
+  <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center justify-between">
+    <span>Commenti</span>
+    <span class="text-sm font-normal text-gray-500 bg-gray-200 px-2.5 py-0.5 rounded-full">
+      {{ comments.count }}
+    </span>
+  </h3>
 
-<ul>
+  <!-- Comments List -->
+  <div class="space-y-4 mb-8">
     {% for comment in comments %}
-        <li>
-            <strong>{{ comment.author.username }}</strong> <small>({{ comment.date|date:"d M Y H:i" }})</small>:
-            <p>{{ comment.text }}</p>
-        </li>
+      <div id="comment-card-{{ comment.id }}" class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+        
+        <!-- Header: Utente, Data e Pulsanti di Azione -->
+        <div class="flex justify-between items-center mb-2">
+          <div class="flex items-center space-x-2">
+            <strong class="text-sm text-gray-900 font-semibold">{{ comment.author.username }}</strong>
+            <span class="text-xs text-gray-400">{{ comment.date|date:"d M Y H:i" }}</span>
+          </div>
+
+          {% if user == comment.author %}
+            <div id="actions-{{ comment.id }}" class="flex items-center space-x-3">
+              <button type="button" onclick="toggleEdit('{{ comment.id }}')" class="text-xs text-indigo-600 hover:text-indigo-800 font-medium transition cursor-pointer">
+                Modifica
+              </button>
+              <button type="button" 
+                      onclick="deleteComment(this, '{{ comment.id }}')" 
+                      data-url="{% url 'blog_app:delete_comment' comment.id %}" 
+                      class="text-xs text-red-600 hover:text-red-800 font-medium transition cursor-pointer">
+                Elimina
+              </button>
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- 1. Testo originale del commento -->
+        <p id="comment-text-{{ comment.id }}" class="text-sm text-gray-700 leading-relaxed">
+          {{ comment.text }}
+        </p>
+
+        <!-- 2. Form di modifica (Sostituisce il testo ed è nascosto di default) -->
+        {% if user == comment.author %}
+          <div id="edit-form-{{ comment.id }}" class="hidden mt-2 space-y-2">
+            <textarea 
+              id="edit-input-{{ comment.id }}" 
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none" 
+              rows="3"
+            >{{ comment.text }}</textarea>
+            
+            <div class="flex space-x-2 justify-end">
+              <button 
+                type="button" 
+                onclick="toggleEdit('{{ comment.id }}')" 
+                class="px-3 py-1.5 text-xs text-gray-600 hover:text-gray-800 font-medium cursor-pointer"
+              >
+                Annulla
+              </button>
+              <button 
+                type="button" 
+                onclick="saveComment(this, '{{ comment.id }}')" 
+                data-url="{% url 'blog_app:edit_comment' comment.id %}" 
+                class="bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-xs px-3 py-1.5 rounded-lg font-medium transition cursor-pointer shadow-sm"
+              >
+                Salva
+              </button>
+            </div>
+          </div>
+        {% endif %}
+
+      </div>
     {% empty %}
-        <li>Ancora nessun commento. Sia il primo a commentare!</li>
+      <div class="bg-white rounded-xl border border-dashed border-gray-300 p-6 text-center text-sm text-gray-400">
+        Ancora nessun commento. Sii il primo a commentare!
+      </div>
     {% endfor %}
-</ul>
+  </div>
 
-<!-- ADD COMMENT FORM -->
-{% if user.is_authenticated %}
-    <h4>Aggiungi un commento</h4>
-    <form action="{% url 'blog_app:add_comment' post.id %}" method="post">
+  <!-- Add Comment Form -->
+  <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+    {% if user.is_authenticated %}
+      <h4 class="text-sm font-bold text-gray-900 mb-3">Aggiungi un commento</h4>
+      <form action="{% url 'blog_app:add_comment' post.id %}" method="post">
         {% csrf_token %}
-        {{ comment_form.as_p }}
-        <button type="submit">Invia commento</button>
-    </form>
-{% else %}
-    <p><a href="{% url 'accounts:login' %}">Accedi</a> per lasciare un commento.</p>
-{% endif %}
+        <div class="mb-4">
+          {{ comment_form.as_p }}
+        </div>
+        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm px-4 py-2 rounded-lg transition shadow-sm cursor-pointer">
+          Invia commento
+        </button>
+      </form>
+    {% else %}
+      <p class="text-sm text-gray-600 text-center">
+        <a href="{% url 'accounts:login' %}" class="text-indigo-600 hover:underline font-semibold">Accedi</a> per lasciare un commento.
+      </p>
+    {% endif %}
+  </div>
 
-<br>
-<a href="{% url 'blog_app:posts' %}">Torna ai Posts</a>
+</section>
+
+<!-- SCRIPT AJAX PER MODIFICA ED ELIMINAZIONE -->
+<script>
+  // Recupera il token CSRF direttamente dal DOM o dal contesto Django
+  const getCSRFToken = () => document.querySelector('[name=csrfmiddlewaretoken]')?.value || '{{ csrf_token }}';
+
+  // Sostituisce il testo con il form di modifica (e viceversa)
+  function toggleEdit(id) {
+    document.getElementById(`comment-text-${id}`)?.classList.toggle('hidden');
+    document.getElementById(`edit-form-${id}`)?.classList.toggle('hidden');
+    document.getElementById(`actions-${id}`)?.classList.toggle('hidden');
+  }
+
+  // Salva le modifiche via AJAX senza ricaricare la pagina
+  async function saveComment(btn, id) {
+    const textInput = document.getElementById(`edit-input-${id}`);
+    const newText = textInput ? textInput.value.trim() : '';
+
+    if (!newText) {
+      alert('Il commento non può essere vuoto.');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('text', newText);
+
+    try {
+      const response = await fetch(btn.dataset.url, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': getCSRFToken(),
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.status === 'ok') {
+        const textElement = document.getElementById(`comment-text-${id}`);
+        if (textElement) textElement.textContent = data.text;
+        toggleEdit(id);
+      } else {
+        alert(data.message || 'Si è verificato un errore.');
+      }
+    } catch (error) {
+      alert('Errore di connessione al server.');
+    }
+  }
+
+  // Elimina il commento via AJAX e rimuove il blocco HTML
+  async function deleteComment(btn, id) {
+    if (!confirm('Sei sicuro di voler eliminare questo commento?')) return;
+
+    try {
+      const response = await fetch(btn.dataset.url, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': getCSRFToken(),
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.status === 'ok') {
+        document.getElementById(`comment-card-${id}`)?.remove();
+      } else {
+        alert(data.message || 'Errore durante l\'eliminazione.');
+      }
+    } catch (error) {
+      alert('Errore di connessione al server.');
+    }
+  }
+</script>
 
 {% endblock content %}

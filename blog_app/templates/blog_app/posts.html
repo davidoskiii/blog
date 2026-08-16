@@ -2,55 +2,95 @@
 
 {% block content %}
 
-<h2>Posts</h2> 
+<div class="flex justify-between items-center mb-8">
+  <h2 class="text-3xl font-extrabold text-gray-900">Esplora per Categoria</h2>
+  
+  {% if user.is_superuser %}
+    <div class="flex space-x-3">
+      <a href="{% url 'blog_app:new_category' %}" class="text-sm bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium px-3.5 py-2 rounded-lg transition shadow-sm">
+        + Nuova Categoria
+      </a>
+      <a href="{% url 'blog_app:new_post' %}" class="text-sm bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-3.5 py-2 rounded-lg transition shadow-sm">
+        + Nuovo Post
+      </a>
+    </div>
+  {% endif %}
+</div>
 
-<ul>
+<div class="flex flex-col justify-between gap-6">
+
   <!-- Categorized Posts -->
   {% for category in categories %}
-    <li>
-      <a href="{% url 'blog_app:category' category.id %}">
-        <strong>{{ category.name }}</strong>
-      </a>
-      <ul>
-        {% for post in category.posts.all|slice:":5" %}
-          <li>
-            <a href="{% url 'blog_app:post' post.id %}">{{ post.title }}</a>
-          </li>
-        {% empty %}
-          <li>Nessun post in questa categoria</li>
-        {% endfor %}
+    <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm flex flex-col justify-between">
+      <div>
+        <div class="flex justify-between items-center border-b border-gray-100 pb-3 mb-4">
+          <a href="{% url 'blog_app:category' category.id %}" class="text-xl font-bold text-gray-900 hover:text-indigo-600 transition">
+            {{ category.name }}
+          </a>
+          <span class="text-xs bg-indigo-50 text-indigo-600 font-semibold px-2.5 py-1 rounded-full">
+            {{ category.posts.count }} post
+          </span>
+        </div>
 
-        {% if category.posts.count > 5 %}
-          <li>...</li>
-        {% endif %}
-      </ul>
-    </li>
+        <ul class="space-y-2.5">
+          {% for post in category.posts.all|slice:":3" %}
+            <li>
+              <a href="{% url 'blog_app:post' post.id %}" class="text-gray-700 hover:text-indigo-600 text-sm font-medium transition flex items-center group">
+                <span class="text-gray-400 group-hover:text-indigo-500 mr-2">&rarr;</span>
+                {{ post.title }}
+              </a>
+            </li>
+          {% empty %}
+            <li class="text-sm text-gray-400 italic">Nessun post in questa categoria.</li>
+          {% endfor %}
+
+          {% if category.posts.count > 3 %}
+            <li class="pt-1">
+              <a href="{% url 'blog_app:category' category.id %}" class="text-xs text-indigo-600 hover:underline font-semibold">
+                Vedi tutti gli altri {{ category.posts.count|add:"-3" }} post...
+              </a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
   {% endfor %}
 
   <!-- Unsorted Posts -->
   {% if unsorted_posts %}
-    <li>
-      <a href="{% url 'blog_app:unsorted' %}">
-        <strong>Unsorted</strong>
-      </a>
-      <ul>
-        {% for post in unsorted_posts|slice:":5" %}
-          <li>
-            <a href="{% url 'blog_app:post' post.id %}">{{ post.title }}</a>
-          </li>
-        {% endfor %}
+    <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm flex flex-col justify-between">
+      <div>
+        <div class="flex justify-between items-center border-b border-gray-100 pb-3 mb-4">
+          <a href="{% url 'blog_app:unsorted' %}" class="text-xl font-bold text-gray-900 hover:text-indigo-600 transition">
+            Unsorted
+          </a>
+          <span class="text-xs bg-gray-100 text-gray-600 font-semibold px-2.5 py-1 rounded-full">
+            {{ unsorted_posts.count }} post
+          </span>
+        </div>
 
-        {% if unsorted_posts.count > 5 %}
-          <li>...</li>
-        {% endif %}
-      </ul>
-    </li>
+        <ul class="space-y-2.5">
+          {% for post in unsorted_posts|slice:":3" %}
+            <li>
+              <a href="{% url 'blog_app:post' post.id %}" class="text-gray-700 hover:text-indigo-600 text-sm font-medium transition flex items-center group">
+                <span class="text-gray-400 group-hover:text-indigo-500 mr-2">&rarr;</span>
+                {{ post.title }}
+              </a>
+            </li>
+          {% endfor %}
+
+          {% if unsorted_posts.count > 3 %}
+            <li class="pt-1">
+              <a href="{% url 'blog_app:unsorted' %}" class="text-xs text-indigo-600 hover:underline font-semibold">
+                Vedi tutti gli altri {{ unsorted_posts.count|add:"-3" }} post...
+              </a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
   {% endif %}
-</ul>
 
-{% if user.is_superuser %}
-  <a href="{% url 'blog_app:new_post' %}">Crea Post</a> | 
-  <a href="{% url 'blog_app:new_category' %}">Crea Categoria</a>
-{% endif %}
+</div>
 
 {% endblock content %}

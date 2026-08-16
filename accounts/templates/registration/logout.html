@@ -2,10 +2,22 @@
 
 {% block content %}
 
-<h2>Disconnessione effettuata</h2>
-<p>Sei uscito con successo dal tuo account.</p>
+<div class="max-w-md mx-auto my-12 bg-white rounded-2xl border border-gray-200 p-8 shadow-sm text-center">
+  <div class="w-12 h-12 bg-green-50 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl">
+    ✓
+  </div>
 
-<a href="{% url 'accounts:login' %}">Accedi di nuovo</a> | 
-<a href="{% url 'blog_app:posts' %}">Torna ai post</a>
+  <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight mb-2">Disconnessione effettuata</h2>
+  <p class="text-sm text-gray-600 mb-6">Sei uscito con successo dal tuo account.</p>
+
+  <div class="flex justify-center items-center space-x-4 text-sm font-medium">
+    <a href="{% url 'accounts:login' %}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition shadow-sm">
+      Accedi di nuovo
+    </a>
+    <a href="{% url 'blog_app:posts' %}" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition">
+      Torna ai post
+    </a>
+  </div>
+</div>
 
 {% endblock content %}
