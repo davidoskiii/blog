@@ -1,0 +1,25 @@
+{% extends 'blog_app/base.html' %}
+
+{% block content %}
+
+<h2>Modifica Post: {{ post.title }}</h2>
+
+<!-- Form to Save Changes -->
+<form action="{% url 'blog_app:edit_post' post.id %}" method="post">
+    {% csrf_token %}
+    {{ form.as_div }}
+    <button name="submit">Salva modifiche</button>
+</form>
+
+<hr>
+
+<!-- Form to Delete Post -->
+<form action="{% url 'blog_app:delete_post' post.id %}" method="post" onsubmit="return confirm('Sei sicuro di voler eliminare questo post?');">
+    {% csrf_token %}
+    <button type="submit" style="color: red;">Elimina post</button>
+</form>
+
+<br>
+<a href="{% url 'blog_app:post' post.id %}">Annulla</a>
+
+{% endblock content %}

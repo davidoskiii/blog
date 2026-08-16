@@ -1,0 +1,65 @@
+{% extends 'blog_app/base.html' %}
+
+{% block content %}
+
+<h2>{{ post.title }}</h2>
+<small>Pubblicato il: {{ post.date|date:"d M Y H:i" }}</small>
+<p>{{ post.text }}</p>
+
+
+{% if user.is_superuser %}
+    <br>
+    <a href="{% url 'blog_app:edit_post' post.id %}">Modifica Post</a>
+{% endif %}
+
+<hr>
+<br>
+
+<!-- LIKES SECTION -->
+<div>
+    <strong>{{ post.total_likes }} Mi Piace</strong>
+
+    {% if user.is_authenticated %}
+        <form action="{% url 'blog_app:like_post' post.id %}" method="post" style="display:inline;">
+            {% csrf_token %}
+            {% if is_liked %}
+                <button type="submit">Non mi piace più</button>
+            {% else %}
+                <button type="submit">Mi piace</button>
+            {% endif %}
+        </form>
+    {% else %}
+        <p><em><a href="{% url 'accounts:login' %}">Accedi</a> per mettere Mi Piace.</em></p>
+    {% endif %}
+</div>
+
+<!-- COMMENTS SECTION -->
+<h3>Commenti ({{ comments.count }})</h3>
+
+<ul>
+    {% for comment in comments %}
+        <li>
+            <strong>{{ comment.author.username }}</strong> <small>({{ comment.date|date:"d M Y H:i" }})</small>:
+            <p>{{ comment.text }}</p>
+        </li>
+    {% empty %}
+        <li>Ancora nessun commento. Sia il primo a commentare!</li>
+    {% endfor %}
+</ul>
+
+<!-- ADD COMMENT FORM -->
+{% if user.is_authenticated %}
+    <h4>Aggiungi un commento</h4>
+    <form action="{% url 'blog_app:add_comment' post.id %}" method="post">
+        {% csrf_token %}
+        {{ comment_form.as_p }}
+        <button type="submit">Invia commento</button>
+    </form>
+{% else %}
+    <p><a href="{% url 'accounts:login' %}">Accedi</a> per lasciare un commento.</p>
+{% endif %}
+
+<br>
+<a href="{% url 'blog_app:posts' %}">Torna ai Posts</a>
+
+{% endblock content %}

@@ -1,0 +1,56 @@
+{% extends 'blog_app/base.html' %}
+
+{% block content %}
+
+<h2>Posts</h2> 
+
+<ul>
+  <!-- Categorized Posts -->
+  {% for category in categories %}
+    <li>
+      <a href="{% url 'blog_app:category' category.id %}">
+        <strong>{{ category.name }}</strong>
+      </a>
+      <ul>
+        {% for post in category.posts.all|slice:":5" %}
+          <li>
+            <a href="{% url 'blog_app:post' post.id %}">{{ post.title }}</a>
+          </li>
+        {% empty %}
+          <li>Nessun post in questa categoria</li>
+        {% endfor %}
+
+        {% if category.posts.count > 5 %}
+          <li>...</li>
+        {% endif %}
+      </ul>
+    </li>
+  {% endfor %}
+
+  <!-- Unsorted Posts -->
+  {% if unsorted_posts %}
+    <li>
+      <a href="{% url 'blog_app:unsorted' %}">
+        <strong>Unsorted</strong>
+      </a>
+      <ul>
+        {% for post in unsorted_posts|slice:":5" %}
+          <li>
+            <a href="{% url 'blog_app:post' post.id %}">{{ post.title }}</a>
+          </li>
+        {% endfor %}
+
+        {% if unsorted_posts.count > 5 %}
+          <li>...</li>
+        {% endif %}
+      </ul>
+    </li>
+  {% endif %}
+</ul>
+
+{% if user.is_superuser %}
+  <a href="{% url 'blog_app:new_post' %}">Crea Post</a> | 
+  <a href="{% url 'blog_app:new_category' %}">Crea Categoria</a>
+{% endif %}
+
+{% endblock content %}

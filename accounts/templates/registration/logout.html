@@ -1,0 +1,11 @@
+{% extends 'blog_app/base.html' %}
+
+{% block content %}
+
+<h2>Disconnessione effettuata</h2>
+<p>Sei uscito con successo dal tuo account.</p>
+
+<a href="{% url 'accounts:login' %}">Accedi di nuovo</a> | 
+<a href="{% url 'blog_app:posts' %}">Torna ai post</a>
+
+{% endblock content %}

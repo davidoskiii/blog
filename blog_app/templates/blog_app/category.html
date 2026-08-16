@@ -1,0 +1,25 @@
+{% extends 'blog_app/base.html' %}
+
+{% block content %}
+
+<h2>Categoria: {{ category.name }}</h2> 
+
+<ul>
+  {% for post in posts %}
+    <li>
+      <a href="{% url 'blog_app:post' post.id %}">
+        <h3>{{ post.title }}</h3>
+      </a>
+    </li>
+  {% empty %}
+    <li>Non ci sono Post in questa categoria.</li>
+  {% endfor %}
+</ul>
+
+{% if user.is_superuser %}
+  <a href="{% url 'blog_app:edit_category' category.id %}">Modifica Categoria</a>
+{% endif %}
+
+<a href="{% url 'blog_app:posts' %}">Torna a tutti i posts</a>
+
+{% endblock content %}

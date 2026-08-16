@@ -1,0 +1,15 @@
+{% extends 'blog_app/base.html' %}
+
+{% block content %}
+
+<h2>Accedi</h2>
+
+<form action="{% url 'accounts:login' %}" method="post">
+    {% csrf_token %}
+    {{ form.as_div }}
+    <button name="submit">Accedi</button>
+</form>
+
+<p>Non hai un account? <a href="{% url 'accounts:register' %}">Registrati qui</a>.</p>
+
+{% endblock content %}

@@ -1,0 +1,13 @@
+{% extends 'blog_app/base.html' %}
+
+{% block content %}
+
+<p>Crea una nuova Categoria</p> 
+
+<form action="{% url 'blog_app:new_category' %}" method="post">
+    {% csrf_token %}
+    {{ form.as_div }}   
+    <button name="submit">Crea categoria</button>
+</form>
+
+{% endblock content %}

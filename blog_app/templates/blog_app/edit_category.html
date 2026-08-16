@@ -1,0 +1,25 @@
+{% extends 'blog_app/base.html' %}
+
+{% block content %}
+
+<h2>Modifica Categoria: {{ category.name }}</h2>
+
+<!-- Form to Save Changes -->
+<form action="{% url 'blog_app:edit_category' category.id %}" method="post">
+    {% csrf_token %}
+    {{ form.as_div }}
+    <button name="submit">Salva modifiche</button>
+</form>
+
+<hr>
+
+<!-- Form to Delete Category -->
+<form action="{% url 'blog_app:delete_category' category.id %}" method="post" onsubmit="return confirm('Sei sicuro di voler eliminare questa categoria? I post diventeranno Unsorted.');">
+    {% csrf_token %}
+    <button type="submit" style="color: red;">Elimina categoria</button>
+</form>
+
+<br>
+<a href="{% url 'blog_app:category' category.id %}">Annulla</a>
+
+{% endblock content %}
