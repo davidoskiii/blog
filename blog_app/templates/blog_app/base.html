@@ -5,69 +5,87 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'css/output.css' %}">
-    <title>{% block title %}Blog{% endblock %}</title>
+    <title>{% block title %}BLOG_SYS // TERMINAL{% endblock %}</title>
 </head>
-<body class="font-serif antialiased min-h-screen flex flex-col">
+<body class="font-mono bg-white text-gray-800 antialiased min-h-screen flex flex-col">
 
   <!-- NAVBAR -->
-  <header class="w-full py-8 bg-transparent">
-    <div class="max-w-4xl mx-auto px-4">
-      <nav class="flex items-center justify-center space-x-3 text-base sm:text-lg tracking-wide">
+  <header class="w-full py-8 bg-transparent border-b border-gray-300">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6">
+      <nav class="flex flex-wrap items-center justify-between text-xs sm:text-sm tracking-wide gap-4">
 
-        <!-- Archivio -->
-        <a href="{% url 'blog_app:posts' %}" class="underline underline-offset-4 text-gray-600 hover:text-black transition">
-          archivio
-        </a>
+        <!-- Left Terminal Ident -->
+        <div class="text-gray-500 font-bold uppercase">
+          SYS_LOG_v2.0
+        </div>
 
-        {% if user.is_superuser %}
-          <span class="text-xs select-none">•</span>
-          <a href="{% url 'blog_app:new_post' %}" class="underline underline-offset-4 text-gray-600 hover:text-black transition">
-            nuovo
+        <!-- Navigation Links -->
+        <div class="flex items-center space-x-3 sm:space-x-4">
+          <a href="{% url 'blog_app:posts' %}" class="underline underline-offset-4 text-gray-600 hover:text-black">
+            archivio
           </a>
-        {% endif %}
 
-        <span class="text-xs select-none">•</span>
+          {% if user.is_superuser %}
+            <span class="text-xs text-gray-400 select-none">•</span>
+            <a href="{% url 'blog_app:new_post' %}" class="underline underline-offset-4 text-gray-600 hover:text-black">
+              + nuovo_post
+            </a>
+            <span class="text-xs text-gray-400 select-none">•</span>
+            <a href="{% url 'blog_app:new_category' %}" class="underline underline-offset-4 text-gray-600 hover:text-black">
+              + nuova_categoria
+            </a>
+          {% endif %}
 
-        <!-- Search Bar styled as minimalist link/input -->
-        <form action="{% url 'blog_app:search' %}" method="get" class="inline-flex items-center">
-          <input 
-            type="text" 
-            name="q" 
-            value="{{ request.GET.q }}"
-            placeholder="cerca..." 
-            class="bg-transparent border-b border-gray-600 text-gray-600 placeholder-gray-500 text-base sm:text-lg font-serif focus:outline-none w-20 sm:w-28 focus:w-36 transition-all duration-200 px-1"
-            required
-          >
-        </form>
+          <span class="text-xs text-gray-400 select-none">•</span>
 
-        <span class="text-xs select-none">•</span>
-
-        <!-- Auth Status -->
-        {% if user.is_authenticated %}
-          <form action="{% url 'accounts:logout' %}" method="post" class="inline">
-            {% csrf_token %}
-            <button type="submit" class="underline underline-offset-4 text-gray-600 hover:text-black transition ml-1">
-              esci
-            </button>
+          <!-- Minimalist Search Input -->
+          <form action="{% url 'blog_app:search' %}" method="get" class="inline-flex items-center">
+            <input 
+              type="text" 
+              name="q" 
+              value="{{ request.GET.q }}"
+              placeholder="cerca..." 
+              class="bg-transparent border-b border-gray-600 text-gray-700 placeholder-gray-400 text-xs sm:text-sm font-mono focus:outline-none w-24 sm:w-32 focus:w-44 transition-all duration-200 px-1"
+              required
+            >
           </form>
-        {% else %}
-          <a href="{% url 'accounts:login' %}" class="underline underline-offset-4 text-gray-600 hover:text-black transition">
-            accedi
-          </a>
-        {% endif %}
+
+          <span class="text-xs text-gray-400 select-none">•</span>
+
+          <!-- Auth Status -->
+          {% if user.is_authenticated %}
+            <form action="{% url 'accounts:logout' %}" method="post" class="inline">
+              {% csrf_token %}
+              <button type="submit" class="underline underline-offset-4 text-gray-600 hover:text-black cursor-pointer">
+                esci [{{ user.username }}]
+              </button>
+            </form>
+          {% else %}
+            <a href="{% url 'accounts:login' %}" class="underline underline-offset-4 text-gray-600 hover:text-black">
+              accedi
+            </a>
+          {% endif %}
+        </div>
 
       </nav>
     </div>
   </header>
 
-  <!-- MAIN CONTENT CONTAINER -->
-  <main class="flex-grow max-w-4xl w-full mx-auto px-4 py-8">
+  <!-- MAIN CONTENT CONTAINER (CENTERED) -->
+  <main class="flex-grow max-w-5xl w-full mx-auto px-4 sm:px-6 py-8">
     {% block content %}{% endblock content %}
   </main>
 
   <!-- FOOTER -->
-  <footer class="py-8 mt-12 text-center text-xs text-gray-500 font-serif">
-    &copy; Blog Personale. Tutti i diritti riservati.
+  <footer class="w-full border-t border-gray-300 mt-12">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-8 text-xs text-gray-500 font-mono flex flex-wrap justify-between items-center gap-2">
+      <div>
+        &copy; Blog Personale. Tutti i diritti riservati.
+      </div>
+      <div class="text-gray-400">
+        STATUS: ONLINE // SYS_READY
+      </div>
+    </div>
   </footer>
 
 </body>
