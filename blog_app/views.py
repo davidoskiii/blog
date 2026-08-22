@@ -20,11 +20,6 @@ def superuser_required(view_func):
     return _wrapped_view
 
 
-def index(request):
-    "Home Page"
-    return render(request, 'blog_app/index.html')
-
-
 def posts(request):
     """List posts grouped by category (first 5 per category)."""
     categories = Category.objects.all()

@@ -2,59 +2,75 @@
 
 {% block content %}
 
-<div class="max-w-md mx-auto my-8 bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm">
-  
-  <div class="text-center mb-8">
-    <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-3 text-xl font-bold">
-      👤
-    </div>
-    <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight">Crea Account</h2>
-    <p class="text-sm text-gray-500 mt-1">Registrati per iniziare a pubblicare e commentare</p>
+<!-- Back Navigation -->
+<div class="mb-8 font-mono text-xs">
+  <a href="{% url 'blog_app:posts' %}" class="text-gray-500 hover:text-black underline underline-offset-4">
+    &lt;-- back_to_log_archive
+  </a>
+</div>
+
+<div class="w-full font-mono">
+
+  <!-- Terminal Header Signal -->
+  <div class="flex justify-between items-baseline border-b border-gray-600 pb-2 mb-8">
+    <h1 class="text-2xl font-mono uppercase tracking-wider text-gray-700">
+      USER_REGISTRATION <span class="text-xs font-normal lowercase text-gray-400">// create_account</span>
+    </h1>
   </div>
 
-  <!-- Errori Generali -->
+  <!-- Form-Level Errors -->
   {% if form.non_field_errors %}
-    <div class="mb-6 p-4 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700 font-medium space-y-1">
+    <div class="mb-6 p-3 border border-red-600 text-xs text-red-600 space-y-1">
       {% for error in form.non_field_errors %}
-        <p class="flex items-center">&bull; {{ error }}</p>
+        <p>[!] {{ error }}</p>
       {% endfor %}
     </div>
   {% endif %}
 
-  <form action="{% url 'accounts:register' %}" method="post" class="space-y-4">
-    {% csrf_token %}
+  <!-- Main Registration Form -->
+  <form action="{% url 'accounts:register' %}" method="post" class="space-y-6 w-full">
+      {% csrf_token %}
 
-    {% for field in form %}
-      <div class="space-y-1.5">
-        <label for="{{ field.id_for_label }}" class="block text-xs font-semibold uppercase tracking-wider text-gray-700">
-          {{ field.label }}
-        </label>
-        
-        {{ field }}
+      <div class="space-y-4 text-xs w-full">
+        {% for field in form %}
+          <div class="space-y-1">
+            <label for="{{ field.id_for_label }}" class="block text-gray-500 uppercase tracking-wider">
+              {{ field.label }}
+            </label>
+            
+            <input type="{{ field.field.widget.input_type|default:'text' }}" 
+                   name="{{ field.html_name }}" 
+                   id="{{ field.id_for_label }}"
+                   {% if field.value %}value="{{ field.value }}"{% endif %}
+                   class="w-full p-2 border border-gray-600 bg-transparent text-sm text-gray-800 focus:outline-none focus:border-black" />
 
-        {% if field.help_text %}
-          <div class="text-[11px] text-gray-400 leading-normal space-y-0.5">
-            {{ field.help_text|safe }}
+            {% if field.help_text %}
+              <div class="text-[11px] text-gray-400 leading-tight space-y-0.5">
+                // {{ field.help_text|safe }}
+              </div>
+            {% endif %}
+
+            {% for error in field.errors %}
+              <p class="text-xs text-red-600">[!] {{ error }}</p>
+            {% endfor %}
           </div>
-        {% endif %}
-
-        {% for error in field.errors %}
-          <p class="text-xs text-red-600 font-medium">&bull; {{ error }}</p>
         {% endfor %}
       </div>
-    {% endfor %}
 
-    <button type="submit" name="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold text-sm py-2.5 rounded-lg transition shadow-md cursor-pointer mt-4">
-      Registrati
-    </button>
+      <!-- Actions Bar -->
+      <div class="pt-6 flex flex-wrap items-center justify-between border-t border-gray-300 text-xs gap-4">
+        <span class="text-gray-500">
+          already_registered? 
+          <a href="{% url 'accounts:login' %}" class="text-gray-800 font-bold underline underline-offset-4 hover:text-black">
+            [authenticate_here]
+          </a>
+        </span>
+
+        <button type="submit" name="submit" class="text-gray-800 hover:text-black font-bold underline underline-offset-4 cursor-pointer">
+          [+ register_user]
+        </button>
+      </div>
   </form>
-
-  <p class="mt-8 text-center text-xs text-gray-500 border-t border-gray-100 pt-5">
-    Hai già un account? 
-    <a href="{% url 'accounts:login' %}" class="font-bold text-indigo-600 hover:text-indigo-800 transition">
-      Accedi qui
-    </a>
-  </p>
 
 </div>
 

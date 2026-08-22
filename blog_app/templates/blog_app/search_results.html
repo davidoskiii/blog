@@ -2,61 +2,63 @@
 
 {% block content %}
 
-<!-- Header Risultati -->
-<div class="mb-8">
-  <a href="{% url 'blog_app:posts' %}" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-indigo-600 mb-4 transition">
-    &larr; Torna a tutti i post
+<!-- Back Navigation -->
+<div class="mb-8 font-mono text-xs">
+  <a href="{% url 'blog_app:posts' %}" class="text-gray-500 hover:text-black underline underline-offset-4">
+    &lt;-- back_to_log_archive
   </a>
-  
-  <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight">
-    Risultati di ricerca per: <span class="text-indigo-600">"{{ query }}"</span>
-  </h2>
 </div>
 
-{% if results_by_category %}
-  <div class="flex flex-col gap-6">
-    {% for category_name, posts in results_by_category.items %}
-      <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm flex flex-col justify-between">
-        <div>
-          
-          <!-- Header Categoria come Hyperlink -->
-          <div class="flex justify-between items-center border-b border-gray-100 pb-3 mb-4">
-            {% if posts.0.category %}
-              <a href="{% url 'blog_app:category' posts.0.category.id %}" class="text-xl font-bold text-gray-900 hover:text-indigo-600 transition">
-                {{ category_name }}
-              </a>
-            {% else %}
-              <a href="{% url 'blog_app:unsorted' %}" class="text-xl font-bold text-gray-900 hover:text-indigo-600 transition">
-                {{ category_name }}
-              </a>
-            {% endif %}
+<div class="w-full font-mono">
 
-            <span class="text-xs bg-indigo-50 text-indigo-600 font-semibold px-2.5 py-1 rounded-full">
-              {{ posts|length }} post trovat{% if posts|length == 1 %}o{% else %}i{% endif %}
+  <!-- Header Risultati / Log Header -->
+  <div class="flex justify-between items-baseline border-b border-gray-600 pb-2 mb-8">
+    <h1 class="text-2xl font-mono uppercase tracking-wider text-gray-700">
+      SEARCH_RESULTS <span class="text-xs font-normal lowercase text-gray-400">// query: "{{ query }}"</span>
+    </h1>
+  </div>
+
+  {% if results_by_category %}
+    <div class="space-y-8 font-mono">
+      {% for category_name, posts in results_by_category.items %}
+        <div class="border-b border-gray-300 pb-6">
+          
+          <!-- Category Header -->
+          <div class="flex justify-between items-baseline border-b border-gray-200 pb-2 mb-4">
+            <span class="text-sm font-bold uppercase tracking-wider text-gray-700">
+              {% if posts.0.category %}
+                [CATEGORY: <a href="{% url 'blog_app:category' posts.0.category.id %}" class="underline hover:text-black">{{ category_name|lower }}</a>]
+              {% else %}
+                [CATEGORY: <a href="{% url 'blog_app:unsorted' %}" class="underline hover:text-black">{{ category_name|lower }}</a>]
+              {% endif %}
+            </span>
+
+            <span class="text-xs text-gray-500">
+              MATCHES: [<strong>{{ posts|length }}</strong>]
             </span>
           </div>
 
-          <!-- Lista dei Post -->
-          <ul class="space-y-2.5">
+          <!-- Flat Post Log List -->
+          <div class="space-y-2 text-xs">
             {% for post in posts %}
-              <li>
-                <a href="{% url 'blog_app:post' post.id %}" class="text-gray-700 hover:text-indigo-600 text-sm font-medium transition flex items-center group">
-                  <span class="text-gray-400 group-hover:text-indigo-500 mr-2 transition-transform group-hover:translate-x-0.5">&rarr;</span>
+              <div class="flex flex-wrap items-center gap-3">
+                <span class="text-gray-500">[{{ post.created_at|date:"Y.m.d"|default:"2026.08.22" }}]</span>
+                <a href="{% url 'blog_app:post' post.id %}" class="font-bold text-gray-600 hover:text-black hover:underline uppercase tracking-wide text-sm">
                   {{ post.title }}
                 </a>
-              </li>
+              </div>
             {% endfor %}
-          </ul>
+          </div>
 
         </div>
-      </div>
-    {% endfor %}
-  </div>
-{% else %}
-  <div class="bg-white rounded-xl border border-dashed border-gray-300 p-12 text-center">
-    <p class="text-base font-medium text-gray-600">Nessun post trovato contenente "{{ query }}" nel titolo.</p>
-    <p class="text-xs text-gray-400 mt-1">Prova a cercare con termini differenti o più generici.</p>
-  </div>
-{% endif %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="text-xs text-gray-400 italic">
+      // nessun risultato trovato per la query: "{{ query }}".
+    </div>
+  {% endif %}
+
+</div>
 
 {% endblock content %}

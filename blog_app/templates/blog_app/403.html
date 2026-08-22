@@ -2,27 +2,38 @@
 
 {% block content %}
 
-<div class="max-w-2xl mx-auto my-8">
-  <div class="bg-red-50 border border-red-200 rounded-2xl p-6 sm:p-8 shadow-sm">
-    <div class="flex items-start space-x-3">
-      <div class="flex-shrink-0 text-red-500 text-xl font-bold">
-        ⚠
-      </div>
-      <div class="space-y-2">
-        <h2 class="text-xl font-bold text-red-800 tracking-tight">{{ error_title }}</h2>
-        <p class="text-sm text-red-700 leading-relaxed">{{ error_message }}</p>
-        <p class="text-xs text-red-500 pt-2 border-t border-red-100">
-          Se credi si tratti di un errore, contatta l'amministratore del sito.
-        </p>
-      </div>
+<!-- Back Navigation -->
+<div class="mb-8 font-mono text-xs">
+  <a href="{% url 'blog_app:posts' %}" class="text-gray-500 hover:text-black underline underline-offset-4">
+    &lt;-- back_to_log_archive
+  </a>
+</div>
+
+<div class="w-full font-mono">
+
+  <!-- Terminal Header Signal -->
+  <div class="flex justify-between items-baseline border-b border-gray-600 pb-2 mb-8">
+    <h1 class="text-2xl font-mono uppercase tracking-wider text-gray-700">
+      SYSTEM_ERROR <span class="text-xs font-normal lowercase text-gray-400">// [code: 4xx/5xx]</span>
+    </h1>
+  </div>
+
+  <!-- Terminal Error Box -->
+  <div class="border border-gray-600 p-6 space-y-4 text-xs">
+    <div class="flex items-center space-x-2 text-gray-800 font-bold uppercase tracking-wide text-sm">
+      <span>[!]</span>
+      <h2>{{ error_title }}</h2>
+    </div>
+
+    <p class="text-gray-600 leading-relaxed">
+      {{ error_message }}
+    </p>
+
+    <div class="pt-4 border-t border-gray-300 text-gray-400">
+      // ERR_STACK: contact sys_admin if this state persists.
     </div>
   </div>
 
-  <div class="mt-6">
-    <a href="{% url 'blog_app:posts' %}" class="inline-flex items-center text-sm font-medium text-gray-600 hover:text-indigo-600 transition">
-      &larr; Torna ai Posts
-    </a>
-  </div>
 </div>
 
 {% endblock content %}
