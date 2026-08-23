@@ -26,14 +26,17 @@
       {% endif %}
     </div>
 
-    <div class="flex flex-wrap items-center gap-3 text-xs text-gray-500">
-      <span>[{{ post.date|date:"Y.m.d H:i" }}]</span>
-      {% if post.category %}
-        <span>[TAGS: <a href="{% url 'blog_app:category' post.category.id %}" class="underline hover:text-black">{{ post.category.name|lower }}</a>]</span>
-      {% else %}
-        <span>[TAGS: uncategorized]</span>
-      {% endif %}
-    </div>
+<div class="flex flex-wrap items-center gap-3 text-xs text-gray-500">
+  <span>[{{ post.date|date:"Y.m.d H:i" }}]</span>
+  
+  {% if post.tags.all %}
+    <span>[TAGS: 
+      {% for tag in post.tags.all %}
+        <a href="{% url 'blog_app:tag' tag.id %}" class="underline hover:text-black">{{ tag.name|lower }}</a>{% if not forloop.last %}, {% endif %}
+      {% endfor %}
+    ]</span>
+  {% endif %}
+</div>
   </header>
 
   <!-- Post Body Text -->
@@ -100,9 +103,9 @@
                 edit
               </button>
               <button type="button" 
-                      onclick="deleteComment(this, '{{ comment.id }}')" 
-                      data-url="{% url 'blog_app:delete_comment' comment.id %}" 
-                      class="text-gray-500 hover:text-black underline cursor-pointer">
+                    onclick="deleteComment(this, '{{ comment.id }}')" 
+                    data-url="{% url 'blog_app:delete_comment' comment.id %}" 
+                    class="text-gray-500 hover:text-black underline cursor-pointer">
                 delete
               </button>
             </div>
@@ -175,17 +178,14 @@
 
 <!-- SCRIPT AJAX PER MODIFICA ED ELIMINAZIONE -->
 <script>
-  // Recupera il token CSRF direttamente dal DOM o dal contesto Django
   const getCSRFToken = () => document.querySelector('[name=csrfmiddlewaretoken]')?.value || '{{ csrf_token }}';
 
-  // Sostituisce il testo con il form di modifica (e viceversa)
   function toggleEdit(id) {
     document.getElementById(`comment-text-${id}`)?.classList.toggle('hidden');
     document.getElementById(`edit-form-${id}`)?.classList.toggle('hidden');
     document.getElementById(`actions-${id}`)?.classList.toggle('hidden');
   }
 
-  // Salva le modifiche via AJAX senza ricaricare la pagina
   async function saveComment(btn, id) {
     const textInput = document.getElementById(`edit-input-${id}`);
     const newText = textInput ? textInput.value.trim() : '';
@@ -222,7 +222,6 @@
     }
   }
 
-  // Elimina il commento via AJAX, rimuove il blocco HTML e aggiorna il conteggio
   async function deleteComment(btn, id) {
     if (!confirm('Sei sicuro di voler eliminare questo commento?')) return;
 
@@ -238,17 +237,14 @@
       const data = await response.json();
 
       if (response.ok && data.status === 'ok') {
-        // Rimuove la card del commento
         document.getElementById(`comment-card-${id}`)?.remove();
 
-        // Aggiorna il contatore dei commenti
         const countEl = document.getElementById('comments-count');
         if (countEl) {
           const currentCount = parseInt(countEl.textContent, 10) || 0;
           const newCount = Math.max(0, currentCount - 1);
           countEl.textContent = newCount;
 
-          // Se i commenti sono finiti, mostra il messaggio di fallback
           if (newCount === 0) {
             const container = document.getElementById('comments-container');
             if (container) {

@@ -10,17 +10,17 @@
 <body class="font-mono bg-white text-gray-800 antialiased min-h-screen flex flex-col">
 
   <!-- NAVBAR -->
-  <header class="w-full py-8 bg-transparent border-b border-gray-300">
+  <header class="w-full py-6 bg-transparent border-b border-gray-300">
     <div class="w-[70%] min-w-[320px] mx-auto">
-      <nav class="flex flex-wrap items-center justify-between text-xs sm:text-sm tracking-wide gap-4">
+      <nav class="flex items-center justify-between text-xs sm:text-sm tracking-wide">
 
         <!-- Left Terminal Ident -->
         <div class="text-gray-500 font-bold uppercase">
           SYS_LOG_v2.0
         </div>
 
-        <!-- Navigation Links -->
-        <div class="flex items-center space-x-3 sm:space-x-4">
+        <!-- Desktop Navigation Links (Visible on md and up) -->
+        <div class="hidden md:flex items-center space-x-4">
           <a href="{% url 'blog_app:posts' %}" class="underline underline-offset-4 text-gray-600 hover:text-black">
             archivio
           </a>
@@ -31,8 +31,8 @@
               + nuovo_post
             </a>
             <span class="text-xs text-gray-400 select-none">•</span>
-            <a href="{% url 'blog_app:new_category' %}" class="underline underline-offset-4 text-gray-600 hover:text-black">
-              + nuova_categoria
+            <a href="{% url 'blog_app:new_tag' %}" class="underline underline-offset-4 text-gray-600 hover:text-black">
+              + nuova_tag
             </a>
           {% endif %}
 
@@ -45,7 +45,7 @@
               name="q" 
               value="{{ request.GET.q }}"
               placeholder="cerca..." 
-              class="bg-transparent border-b border-gray-600 text-gray-700 placeholder-gray-400 text-xs sm:text-sm font-mono focus:outline-none w-24 sm:w-32 focus:w-44 transition-all duration-200 px-1"
+              class="bg-transparent border-b border-gray-600 text-gray-700 placeholder-gray-400 text-xs sm:text-sm font-mono focus:outline-none w-28 focus:w-40 transition-all duration-200 px-1"
               required
             >
           </form>
@@ -65,6 +65,64 @@
               accedi
             </a>
           {% endif %}
+        </div>
+
+        <!-- Mobile Dropdown Menu (Hidden on md and up) -->
+        <div class="block md:hidden relative">
+          <details class="group">
+            <summary class="list-none cursor-pointer text-xs font-bold text-gray-700 border border-gray-600 px-2 py-1 select-none hover:bg-gray-100">
+              [MENU]
+            </summary>
+
+            <div class="absolute right-0 mt-2 w-48 bg-white border border-gray-600 shadow-lg p-3 space-y-3 z-50 text-xs">
+              <div>
+                <a href="{% url 'blog_app:posts' %}" class="block text-gray-700 hover:text-black underline">
+                  &gt; archivio
+                </a>
+              </div>
+
+              {% if user.is_superuser %}
+                <div>
+                  <a href="{% url 'blog_app:new_post' %}" class="block text-gray-700 hover:text-black underline">
+                    &gt; + nuovo_post
+                  </a>
+                </div>
+                <div>
+                  <a href="{% url 'blog_app:new_tag' %}" class="block text-gray-700 hover:text-black underline">
+                    &gt; + nuova_tag
+                  </a>
+                </div>
+              {% endif %}
+
+              <div class="pt-2 border-t border-gray-200">
+                <form action="{% url 'blog_app:search' %}" method="get" class="w-full">
+                  <input 
+                    type="text" 
+                    name="q" 
+                    value="{{ request.GET.q }}"
+                    placeholder="cerca..." 
+                    class="w-full bg-transparent border-b border-gray-600 text-gray-700 placeholder-gray-400 text-xs font-mono focus:outline-none px-1"
+                    required
+                  >
+                </form>
+              </div>
+
+              <div class="pt-2 border-t border-gray-200">
+                {% if user.is_authenticated %}
+                  <form action="{% url 'accounts:logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="text-gray-700 hover:text-black underline cursor-pointer w-full text-left">
+                      &gt; esci [{{ user.username }}]
+                    </button>
+                  </form>
+                {% else %}
+                  <a href="{% url 'accounts:login' %}" class="block text-gray-700 hover:text-black underline">
+                    &gt; accedi
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+          </details>
         </div>
 
       </nav>

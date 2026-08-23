@@ -20,10 +20,9 @@ urlpatterns = [
     path('comment/<int:comment_id>/edit/', views.edit_comment, name='edit_comment'),
     path('comment/<int:comment_id>/delete/', views.delete_comment, name='delete_comment'),
 
-    # Categories
-    path('new_category/', views.new_category, name='new_category'),
-    path('categories/unsorted/', views.unsorted, name='unsorted'),
-    path('categories/<int:category_id>/', views.category, name='category'),
-    path('edit_category/<int:category_id>/', views.edit_category, name='edit_category'),
-    path('delete_category/<int:category_id>/', views.delete_category, name='delete_category'),
+    # Tags (Formerly Categories)
+    path('new_tag/', views.new_tag, name='new_tag'),
+    path('tag/<int:tag_id>/', views.tag, name='tag'),
+    path('edit_tag/<int:tag_id>/', views.edit_tag, name='edit_tag'),
+    path('delete_tag/<int:tag_id>/', views.delete_tag, name='delete_tag'),
 ]

@@ -1,10 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.db.models import Q
 from django.contrib.auth.decorators import user_passes_test, login_required
 from functools import wraps
 from django.http import HttpResponseForbidden, JsonResponse
 
-from .models import Post, Category, Comment
-from .forms import PostForm, CategoryForm, CommentForm
+# Change these lines at the top of views.py:
+from .models import Post, Tag, Comment
+from .forms import PostForm, TagForm, CommentForm
 
 def superuser_required(view_func):
     @wraps(view_func)
@@ -21,54 +23,41 @@ def superuser_required(view_func):
 
 
 def posts(request):
-    """List posts grouped by category (first 5 per category)."""
-    categories = Category.objects.all()
-    unsorted_posts = Post.objects.filter(category=None)
+    """List all posts in a flat chronological log."""
+    # Fetches all posts, newest first, and grabs their tags in one query
+    posts = Post.objects.all().order_by('-date').prefetch_related('tags')
     
     context = {
-        'categories': categories,
-        'unsorted_posts': unsorted_posts,
+        'posts': posts,
     }
     return render(request, 'blog_app/posts.html', context)
 
 def search_posts(request):
     query = request.GET.get('q', '').strip()
-    results_by_category = {}
+    posts = []
 
     if query:
-        matching_posts = Post.objects.filter(title__icontains=query).select_related('category')
-        
-        for post in matching_posts:
-            category_name = post.category.name if post.category else "Unsorted"
-            if category_name not in results_by_category:
-                results_by_category[category_name] = []
-            results_by_category[category_name].append(post)
+        # Search posts where title or text contains the query, and prefetch tags
+        posts = Post.objects.filter(
+            Q(title__icontains=query) | Q(text__icontains=query)
+        ).order_by('-date').prefetch_related('tags').distinct()
 
     context = {
         'query': query,
-        'results_by_category': results_by_category,
+        'posts': posts,
     }
     return render(request, 'blog_app/search_results.html', context)
 
-def category(request, category_id):
-    """Show all posts belonging to a specific category."""
-    category = get_object_or_404(Category, id=category_id)
-    posts = category.posts.all()  # Retrieves all posts for this category
+def tag(request, tag_id):
+    """Show all posts containing a specific tag."""
+    tag = get_object_or_404(Tag, id=tag_id)
+    posts = tag.posts.all()
     
     context = {
-        'category': category,
+        'tag': tag,
         'posts': posts,
     }
-    return render(request, 'blog_app/category.html', context)
-
-def unsorted(request):
-    """Show all unsorted posts (posts without a category)."""
-    posts = Post.objects.filter(category=None)
-    
-    context = {
-        'posts': posts,
-    }
-    return render(request, 'blog_app/unsorted.html', context)
+    return render(request, 'blog_app/tag.html', context)
 
 def post(request, post_id):
     """Individual Post view open to everyone."""
@@ -193,47 +182,41 @@ def delete_post(request, post_id):
     return redirect('blog_app:posts')
 
 @superuser_required
-def edit_category(request, category_id):
-    """Edit an existing category."""
-    category = get_object_or_404(Category, id=category_id)
+def edit_tag(request, tag_id):
+    """Edit an existing tag."""
+    tag = get_object_or_404(Tag, id=tag_id)
 
     if request.method != 'POST':
-        # Initial request; pre-fill form with current category data
-        form = CategoryForm(instance=category)
+        form = TagForm(instance=tag)
     else:
-        # POST data submitted; process data
-        form = CategoryForm(instance=category, data=request.POST)
+        form = TagForm(instance=tag, data=request.POST)
         if form.is_valid():
             form.save()
-            return redirect('blog_app:category', category_id=category.id)
+            return redirect('blog_app:tag', tag_id=tag.id)
 
-    context = {'category': category, 'form': form}
-    return render(request, 'blog_app/edit_category.html', context)
+    context = {'tag': tag, 'form': form}
+    return render(request, 'blog_app/edit_tag.html', context)
 
 @superuser_required
-def delete_category(request, category_id):
-    """Delete a category."""
-    category = get_object_or_404(Category, id=category_id)
+def delete_tag(request, tag_id):
+    """Delete a tag."""
+    tag = get_object_or_404(Tag, id=tag_id)
     
     if request.method == 'POST':
-        category.delete()
+        tag.delete()
         
     return redirect('blog_app:posts')
 
 @superuser_required
-def new_category(request):
-    "Create Category"
-
+def new_tag(request):
+    """Create Tag"""
     if request.method != 'POST':
-        # No data submitted; create blank form
-        form = CategoryForm()
+        form = TagForm()
     else:
-        # Data submitted; process data
-        form = CategoryForm(data=request.POST)
-
+        form = TagForm(data=request.POST)
         if form.is_valid():
             form.save()
             return redirect('blog_app:posts')
 
     context = {'form': form}
-    return render(request, 'blog_app/new_category.html', context)
+    return render(request, 'blog_app/new_tag.html', context)

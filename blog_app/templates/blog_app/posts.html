@@ -10,8 +10,8 @@
 
   {% if user.is_superuser %}
     <div class="flex space-x-4 text-xs font-mono">
-      <a href="{% url 'blog_app:new_category' %}" class="text-gray-600 hover:text-black underline underline-offset-4">
-        + nuova_categoria
+      <a href="{% url 'blog_app:new_tag' %}" class="text-gray-600 hover:text-black underline underline-offset-4">
+        + nuovo_tag
       </a>
       <a href="{% url 'blog_app:new_post' %}" class="text-gray-600 hover:text-black underline underline-offset-4">
         + nuovo_post
@@ -23,31 +23,26 @@
 <!-- Flat Post Log List -->
 <div class="space-y-2 font-mono text-sm">
 
-  {% for category in categories %}
-    {% for post in category.posts.all %}
-      <div class="flex flex-wrap items-center gap-3">
-        <span class="text-gray-500 font-mono">[{{ post.created_at|date:"Y.m.d"|default:"2026.08.22" }}]</span>
-        <a href="{% url 'blog_app:post' post.id %}" class="font-mono font-bold text-gray-600 hover:underline uppercase tracking-wide text-base">
-          {{ post.title }}
-        </a>
-        <span class="text-xs text-gray-400 font-mono">[TAGS: {{ category.name|lower }}]</span>
-      </div>
-    {% endfor %}
-  {% endfor %}
-
-  {% for post in unsorted_posts %}
-    <div class="flex flex-wrap items-baseline gap-x-2">
-      <span class="text-gray-500 font-mono">[{{ post.created_at|date:"Y.m.d"|default:"2026.08.22" }}]</span>
-      <a href="{% url 'blog_app:post' post.id %}" class="font-mono font-bold text-gray-600 hover:underline uppercase tracking-wide text-base">
-        {{ post.title }}
-      </a>
-      <span class="text-xs text-gray-400 font-mono">[TAGS: uncategorized]</span>
-    </div>
-  {% empty %}
-    {% if not categories %}
-      <p class="text-xs text-gray-500 italic">// nessun post registrato nell'archivio.</p>
+{% for post in posts %}
+  <div class="flex flex-wrap items-center gap-3">
+    <span class="text-gray-500 font-mono">[{{ post.date|date:"Y.m.d" }}]</span>
+    <a href="{% url 'blog_app:post' post.id %}" class="font-mono font-bold text-gray-600 hover:underline uppercase tracking-wide text-base">
+      {{ post.title }}
+    </a>
+    
+    {% if post.tags.all %}
+      <span class="text-xs text-gray-400 font-mono">
+        [TAGS: 
+        {% for tag in post.tags.all %}
+          <a href="{% url 'blog_app:tag' tag.id %}" class="hover:text-gray-500 hover:underline">{{ tag.name|lower }}</a>{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+        ]
+      </span>
     {% endif %}
-  {% endfor %}
+  </div>
+{% empty %}
+  <p class="text-xs text-gray-500 italic">// nessun post registrato nell'archivio.</p>
+{% endfor %}
 
 </div>
 

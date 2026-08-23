@@ -1,6 +1,6 @@
 from django import forms 
 
-from .models import Post, Category, Comment
+from .models import Post, Tag, Comment
 
 # Classe Tailwind standard per gli input di testo e select
 INPUT_CLASSES = (
@@ -9,31 +9,28 @@ INPUT_CLASSES = (
 )
 
 class PostForm(forms.ModelForm):
-    category = forms.ModelChoiceField(
-        queryset=Category.objects.all(),
+    tags = forms.ModelMultipleChoiceField(
+        queryset=Tag.objects.all(),
         required=False,
-        empty_label="[VARIE]",
-        label="// CATEGORIA",
-        widget=forms.Select(attrs={
-            'class': INPUT_CLASSES
+        label="// TAGS",
+        help_text="Tieni premuto CTRL (o CMD su Mac) per selezionare più tag.",
+        widget=forms.SelectMultiple(attrs={
+            'class': INPUT_CLASSES,
+            'style': 'min-height: 120px;' # Gives the multi-select box some breathing room
         })
     )
 
     class Meta:
         model = Post
-        fields = ['title', 'category', 'text']
+        fields = ['title', 'tags', 'text']
         labels = {
             'title': '// TITOLO',
-            'category': '// CATEGORIA',
             'text': '// CONTENUTO_POST',
         }
         widgets = {
             'title': forms.TextInput(attrs={
                 'class': INPUT_CLASSES,
                 'placeholder': 'inserisci_titolo...'
-            }),
-            'category': forms.Select(attrs={
-                'class': INPUT_CLASSES
             }),
             'text': forms.Textarea(attrs={
                 'rows': 5,
@@ -42,17 +39,19 @@ class PostForm(forms.ModelForm):
             }),
         }
 
-class CategoryForm(forms.ModelForm):
+
+class TagForm(forms.ModelForm):
     class Meta:
-        model = Category
+        model = Tag
         fields = ['name']
-        labels = {'name': '// NOME_CATEGORIA'}
+        labels = {'name': '// NOME_TAG'}
         widgets = {
             'name': forms.TextInput(attrs={
                 'class': INPUT_CLASSES,
                 'placeholder': 'es_tecnologia...'
             }),
         }
+
 
 class CommentForm(forms.ModelForm):
     class Meta:

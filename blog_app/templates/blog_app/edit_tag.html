@@ -1,0 +1,54 @@
+{% extends 'blog_app/base.html' %}
+
+{% block content %}
+
+<!-- Back Navigation -->
+<div class="mb-8 font-mono text-xs">
+  <a href="{% url 'blog_app:tag' tag.id %}" class="text-gray-500 hover:text-black underline underline-offset-4">
+    &lt;-- back_to_tag
+  </a>
+</div>
+
+<div class="w-full font-mono">
+  <!-- Section Header -->
+  <div class="flex justify-between items-baseline border-b border-gray-600 pb-2 mb-8">
+    <h1 class="text-2xl font-mono uppercase tracking-wider text-gray-700">
+      EDIT_TAG <span class="text-xs font-normal lowercase text-gray-400">// {{ tag.name }}</span>
+    </h1>
+  </div>
+
+  <!-- Main Edit Form -->
+  <form action="{% url 'blog_app:edit_tag' tag.id %}" method="post" class="space-y-6 w-full">
+      {% csrf_token %}
+      
+      <!-- Django Form Styling Wrapper -->
+      <div class="space-y-4 text-xs w-full
+                [&_label]:block [&_label]:text-gray-500 [&_label]:uppercase [&_label]:tracking-wider [&_label]:mb-1
+                [&_input]:w-full [&_input]:p-2 [&_input]:border [&_input]:border-gray-600 [&_input]:bg-transparent [&_input]:text-sm [&_input]:text-gray-800 [&_input]:focus:outline-none [&_input]:focus:border-black">
+        {{ form.as_div }}
+      </div>
+
+      <!-- Form Actions Bar -->
+      <div class="pt-6 flex items-center justify-between border-t border-gray-300 text-xs">
+        <button type="submit" form="delete-tag-form" class="text-gray-500 hover:text-black underline underline-offset-4 cursor-pointer">
+          [- delete_tag]
+        </button>
+
+        <div class="flex items-center space-x-4">
+          <a href="{% url 'blog_app:tag' tag.id %}" class="text-gray-500 hover:text-black underline cursor-pointer">
+            cancel
+          </a>
+          <button type="submit" name="submit" class="text-gray-800 hover:text-black font-bold underline underline-offset-4 cursor-pointer">
+            [save_changes]
+          </button>
+        </div>
+      </div>
+  </form>
+
+  <!-- Separate Hidden Form for Deletion -->
+  <form id="delete-tag-form" action="{% url 'blog_app:delete_tag' tag.id %}" method="post" onsubmit="return confirm('Sei sicuro di voler eliminare questo tag?');">
+      {% csrf_token %}
+  </form>
+</div>
+
+{% endblock content %}

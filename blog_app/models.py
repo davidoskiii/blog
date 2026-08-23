@@ -1,12 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-class Category(models.Model):
-    """A Post Category only a Superuser can create, it contains Posts"""
-    name = models.CharField(max_length=100, unique=True)
+class Tag(models.Model):
+    """A Tag for filtering posts."""
+    name = models.CharField(max_length=50, unique=True)
 
     class Meta:
-        verbose_name_plural = 'categories'
+        ordering = ['name']
 
     def __str__(self):
         return self.name
@@ -17,14 +17,10 @@ class Post(models.Model):
     title = models.CharField(max_length=200)
     text = models.TextField()
     date = models.DateTimeField(auto_now_add=True)
-    category = models.ForeignKey(
-        Category,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='posts'
-    )
-    # Users who liked this post
+    
+    # Switched from ForeignKey(Category) to ManyToManyField(Tag)
+    tags = models.ManyToManyField(Tag, related_name='posts', blank=True)
+    
     likes = models.ManyToManyField(User, related_name='liked_posts', blank=True)
 
     class Meta:
