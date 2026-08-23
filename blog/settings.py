@@ -25,12 +25,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-6+yz6c+c_$&heng!uu4!k+%6-2ik2qok)f-&wwj3c0ocv*xbf!'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'your-default-local-secret-key')
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = 'RENDER' not in os.environ
-
-ALLOWED_HOSTS = []
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
@@ -86,10 +84,12 @@ WSGI_APPLICATION = 'blog.wsgi.application'
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default='sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3'),
-        conn_max_age=600
-    )
+    "default": {
+        "ENGINE": "django_libsql",
+        # Fall back to a local 'db.sqlite3' file for development
+        "NAME": os.environ.get("TURSO_DB_URL", BASE_DIR / "db.sqlite3"),
+        "AUTH_TOKEN": os.environ.get("TURSO_AUTH_TOKEN", ""),
+    }
 }
 
 
