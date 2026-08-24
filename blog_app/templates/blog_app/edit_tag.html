@@ -13,7 +13,7 @@
   <!-- Section Header -->
   <div class="flex justify-between items-baseline border-b border-gray-600 pb-2 mb-8">
     <h1 class="text-2xl font-mono uppercase tracking-wider text-gray-700">
-      EDIT_TAG <span class="text-xs font-normal lowercase text-gray-400">// {{ tag.name }}</span>
+      MODIFICA_TAG <span class="text-xs font-normal lowercase text-gray-400">// {{ tag.name }}</span>
     </h1>
   </div>
 
@@ -23,23 +23,24 @@
       
       <!-- Django Form Styling Wrapper -->
       <div class="space-y-4 text-xs w-full
-                [&_label]:block [&_label]:text-gray-500 [&_label]:uppercase [&_label]:tracking-wider [&_label]:mb-1
-                [&_input]:w-full [&_input]:p-2 [&_input]:border [&_input]:border-gray-600 [&_input]:bg-transparent [&_input]:text-sm [&_input]:text-gray-800 [&_input]:focus:outline-none [&_input]:focus:border-black">
+                  [&_label]:block [&_label]:text-gray-500 [&_label]:uppercase [&_label]:tracking-wider [&_label]:mb-1
+                  [&_input]:w-full [&_input]:p-2 [&_input]:border [&_input]:border-gray-600 [&_input]:bg-transparent [&_input]:text-sm [&_input]:text-gray-800 [&_input]:focus:outline-none [&_input]:focus:border-black
+                  [&_textarea]:w-full [&_textarea]:p-2 [&_textarea]:border [&_textarea]:border-gray-600 [&_textarea]:bg-transparent [&_textarea]:text-sm [&_textarea]:text-gray-800 [&_textarea]:focus:outline-none [&_textarea]:focus:border-black">
         {{ form.as_div }}
       </div>
 
       <!-- Form Actions Bar -->
       <div class="pt-6 flex items-center justify-between border-t border-gray-300 text-xs">
         <button type="submit" form="delete-tag-form" class="text-gray-500 hover:text-black underline underline-offset-4 cursor-pointer">
-          [- delete_tag]
+          [- elimina_tag]
         </button>
 
         <div class="flex items-center space-x-4">
           <a href="{% url 'blog_app:tag' tag.id %}" class="text-gray-500 hover:text-black underline cursor-pointer">
-            cancel
+            annulla
           </a>
           <button type="submit" name="submit" class="text-gray-800 hover:text-black font-bold underline underline-offset-4 cursor-pointer">
-            [save_changes]
+            [salva_modifiche]
           </button>
         </div>
       </div>

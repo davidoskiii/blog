@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import user_passes_test, login_required
 from functools import wraps
 from django.http import HttpResponseForbidden, JsonResponse
 
-# Change these lines at the top of views.py:
-from .models import Post, Tag, Comment
+from .models import Post, Tag, Comment, UserProfile
 from .forms import PostForm, TagForm, CommentForm
 
 def superuser_required(view_func):
@@ -220,3 +220,64 @@ def new_tag(request):
 
     context = {'form': form}
     return render(request, 'blog_app/new_tag.html', context)
+
+def user_profile(request, username):
+    profile_user = get_object_or_404(User, username=username)
+    
+    # Safety fallback for existing users created before the signal was added
+    profile, _ = UserProfile.objects.get_or_create(user=profile_user)
+    
+    # Fetch user's comments
+    comments = Comment.objects.filter(author=profile_user).order_by('-date')
+    
+    # Fetch posts authored by this user if they are a superuser
+    posts = Post.objects.filter(author=profile_user).order_by('-date') if profile_user.is_superuser else []
+    
+    # Fetch saved posts
+    saved_posts = profile.saved_posts.all().order_by('-date')
+    
+    # Check if currently logged-in user has saved this profile's post list (if visiting own profile)
+    context = {
+        'profile_user': profile_user,
+        'profile': profile,
+        'comments': comments,
+        'posts': posts,
+        'saved_posts': saved_posts,
+    }
+    return render(request, 'blog_app/profile.html', context)
+
+
+@login_required
+def toggle_save_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    profile, _ = UserProfile.objects.get_or_create(user=request.user)
+    
+    if profile.saved_posts.filter(id=post.id).exists():
+        profile.saved_posts.remove(post)
+    else:
+        profile.saved_posts.add(post)
+        
+    return redirect(request.META.get('HTTP_REFERER', 'blog_app:posts'))
+
+
+@login_required
+def edit_profile(request):
+    profile, _ = UserProfile.objects.get_or_create(user=request.user)
+    
+    if request.method == 'POST':
+        bio = request.POST.get('bio', '')
+        first_name = request.POST.get('first_name', '')
+        last_name = request.POST.get('last_name', '')
+        
+        # Save user details
+        request.user.first_name = first_name
+        request.user.last_name = last_name
+        request.user.save()
+        
+        # Save profile details
+        profile.bio = bio
+        profile.save()
+        
+        return redirect('blog_app:profile', username=request.user.username)
+        
+    return render(request, 'blog_app/edit_profile.html', {'profile': profile})

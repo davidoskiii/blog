@@ -25,4 +25,9 @@ urlpatterns = [
     path('tag/<int:tag_id>/', views.tag, name='tag'),
     path('edit_tag/<int:tag_id>/', views.edit_tag, name='edit_tag'),
     path('delete_tag/<int:tag_id>/', views.delete_tag, name='delete_tag'),
+
+    # Profile
+    path('profile/<str:username>/', views.user_profile, name='profile'),
+    path('profile/edit/settings/', views.edit_profile, name='edit_profile'),
+    path('post/<int:post_id>/save/', views.toggle_save_post, name='toggle_save_post'),
 ]

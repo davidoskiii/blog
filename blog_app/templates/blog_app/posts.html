@@ -5,13 +5,13 @@
 <!-- Log Title Header -->
 <div class="flex justify-between items-baseline border-b border-gray-600 pb-2 mb-8">
   <h1 class="text-3xl font-mono uppercase tracking-wider text-gray-600">
-    LOG <span class="text-sm font-normal lowercase text-gray-400">entries // archive</span>
+    LOG <span class="text-sm font-normal lowercase text-gray-400">voci // archivio</span>
   </h1>
 
   {% if user.is_superuser %}
     <div class="flex space-x-4 text-xs font-mono">
       <a href="{% url 'blog_app:new_tag' %}" class="text-gray-600 hover:text-black underline underline-offset-4">
-        + nuovo_tag
+        + nuova_tag
       </a>
       <a href="{% url 'blog_app:new_post' %}" class="text-gray-600 hover:text-black underline underline-offset-4">
         + nuovo_post
@@ -32,7 +32,7 @@
     
     {% if post.tags.all %}
       <span class="text-xs text-gray-400 font-mono">
-        [TAGS: 
+        [TAG: 
         {% for tag in post.tags.all %}
           <a href="{% url 'blog_app:tag' tag.id %}" class="hover:text-gray-500 hover:underline">{{ tag.name|lower }}</a>{% if not forloop.last %}, {% endif %}
         {% endfor %}
@@ -48,7 +48,7 @@
 
 <!-- Terminal Footer Signal -->
 <div class="mt-16 text-xs font-mono text-gray-500">
-  // (end of transmissions) ....
+  // fine delle voci ....
 </div>
 
 {% endblock content %}

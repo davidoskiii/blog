@@ -12,11 +12,11 @@ class PostForm(forms.ModelForm):
     tags = forms.ModelMultipleChoiceField(
         queryset=Tag.objects.all(),
         required=False,
-        label="// TAGS",
+        label="// TAG",
         help_text="Tieni premuto CTRL (o CMD su Mac) per selezionare più tag.",
         widget=forms.SelectMultiple(attrs={
             'class': INPUT_CLASSES,
-            'style': 'min-height: 120px;' # Gives the multi-select box some breathing room
+            'style': 'min-height: 120px;'
         })
     )
 
@@ -44,13 +44,19 @@ class TagForm(forms.ModelForm):
     class Meta:
         model = Tag
         fields = ['name', 'description']
+        labels = {
+            'name': '// NOME',
+            'description': '// DESCRIZIONE',
+        }
         widgets = {
             'name': forms.TextInput(attrs={
-                'class': 'w-full p-2 border border-gray-600 bg-transparent text-sm text-gray-800 focus:outline-none focus:border-black'
+                'class': 'w-full p-2 border border-gray-600 bg-transparent text-sm text-gray-800 focus:outline-none focus:border-black',
+                'placeholder': 'nome_tag...'
             }),
             'description': forms.Textarea(attrs={
                 'class': 'w-full p-2 border border-gray-600 bg-transparent text-sm text-gray-800 focus:outline-none focus:border-black',
-                'rows': 3
+                'rows': 3,
+                'placeholder': 'descrizione_tag...'
             }),
         }
 

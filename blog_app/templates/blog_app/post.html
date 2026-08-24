@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<!-- Back Navigation -->
+<!-- Back Navigation (mantenuto in inglese per lo stile di navigazione) -->
 <div class="mb-8 font-mono text-xs">
   <a href="{% url 'blog_app:posts' %}" class="text-gray-500 hover:text-black underline underline-offset-4">
     &lt;-- back_to_log_archive
@@ -26,17 +26,21 @@
       {% endif %}
     </div>
 
-<div class="flex flex-wrap items-center gap-3 text-xs text-gray-500">
-  <span>[{{ post.date|date:"Y.m.d H:i" }}]</span>
-  
-  {% if post.tags.all %}
-    <span>[TAGS: 
-      {% for tag in post.tags.all %}
-        <a href="{% url 'blog_app:tag' tag.id %}" class="underline hover:text-black">{{ tag.name|lower }}</a>{% if not forloop.last %}, {% endif %}
-      {% endfor %}
-    ]</span>
-  {% endif %}
-</div>
+    <div class="flex flex-wrap items-center gap-3 text-xs text-gray-500">
+      <span>[{{ post.date|date:"Y.m.d H:i" }}]</span>
+      
+      {% if post.author %}
+        <span>[AUTORE: <a href="{% url 'blog_app:profile' post.author.username %}" class="underline hover:text-black">@{{ post.author.username }}</a>]</span>
+      {% endif %}
+
+      {% if post.tags.all %}
+        <span>[TAG: 
+          {% for tag in post.tags.all %}
+            <a href="{% url 'blog_app:tag' tag.id %}" class="underline hover:text-black">{{ tag.name|lower }}</a>{% if not forloop.last %}, {% endif %}
+          {% endfor %}
+        ]</span>
+      {% endif %}
+    </div>
   </header>
 
   <!-- Post Body Text -->
@@ -45,30 +49,47 @@
   </div>
 
   <!-- LIKES BAR -->
-  <div class="pt-4 border-t border-gray-300 flex flex-wrap items-center justify-between gap-4 text-xs text-gray-600">
-    <div class="flex items-center space-x-3">
-      <span>// LIKES_COUNT: <strong class="text-gray-800">{{ post.total_likes }}</strong></span>
+  <div class="flex justify-between items-baseline pt-4 border-t border-gray-300">
+    <div class="flex flex-wrap items-center justify-between gap-4 text-xs text-gray-600">
+      <div class="flex items-center space-x-3">
+        <span>// MI_PIACE: <strong class="text-gray-800">{{ post.total_likes }}</strong></span>
 
-      {% if user.is_authenticated %}
-        <form action="{% url 'blog_app:like_post' post.id %}" method="post" class="inline">
-          {% csrf_token %}
-          {% if is_liked %}
-            <button type="submit" class="text-gray-500 hover:text-black underline underline-offset-4 cursor-pointer">
-              [- remove_like]
-            </button>
-          {% else %}
-            <button type="submit" class="text-gray-600 hover:text-black underline underline-offset-4 cursor-pointer">
-              [+ add_like]
-            </button>
-          {% endif %}
-        </form>
+        {% if user.is_authenticated %}
+          <form action="{% url 'blog_app:like_post' post.id %}" method="post" class="inline">
+            {% csrf_token %}
+            {% if is_liked %}
+              <button type="submit" class="text-gray-500 hover:text-black underline underline-offset-4 cursor-pointer">
+                [- rimuovi_mi_piace]
+              </button>
+            {% else %}
+              <button type="submit" class="text-gray-600 hover:text-black underline underline-offset-4 cursor-pointer">
+                [+ aggiungi_mi_piace]
+              </button>
+            {% endif %}
+          </form>
+        {% endif %}
+      </div>
+
+      {% if not user.is_authenticated %}
+        <span class="text-gray-400">
+          // <a href="{% url 'accounts:login' %}" class="underline hover:text-black">accedi</a> per interagire.
+        </span>
       {% endif %}
     </div>
 
-    {% if not user.is_authenticated %}
-      <span class="text-gray-400">
-        // <a href="{% url 'accounts:login' %}" class="underline hover:text-black">login</a> per interagire.
-      </span>
+    {% if user.is_authenticated %}
+      <form action="{% url 'blog_app:toggle_save_post' post.id %}" method="post" class="inline">
+        {% csrf_token %}
+        {% if post in user.profile.saved_posts.all %}
+          <button type="submit" class="text-xs text-gray-600 hover:text-black underline">
+            [- rimuovi_segnalibro]
+          </button>
+        {% else %}
+          <button type="submit" class="text-xs text-gray-600 hover:text-black underline">
+            [+ salva_post]
+          </button>
+        {% endif %}
+      </form>
     {% endif %}
   </div>
 
@@ -78,10 +99,10 @@
 <section class="font-mono mt-12 pt-6 border-t border-gray-600">
   <div class="flex justify-between items-baseline mb-6 border-b border-gray-200 pb-2">
     <h3 class="text-lg font-mono uppercase tracking-wider text-gray-600">
-      COMMENTS <span class="text-xs font-normal lowercase text-gray-400">// thread</span>
+      COMMENTI <span class="text-xs font-normal lowercase text-gray-400">// discussione</span>
     </h3>
     <span class="text-xs text-gray-500">
-      COUNT: [<span id="comments-count">{{ comments.count }}</span>]
+      TOTALE: [<span id="comments-count">{{ comments.count }}</span>]
     </span>
   </div>
 
@@ -93,20 +114,20 @@
         <!-- Header: Author & Actions -->
         <div class="flex justify-between items-center text-xs mb-2">
           <div class="space-x-2">
-            <span class="text-gray-700 font-bold">@{{ comment.author.username }}</span>
+            <a href="{% url 'blog_app:profile' comment.author.username %}" class="text-gray-700 font-bold underline hover:text-black">@{{ comment.author.username }}</a>
             <span class="text-gray-400">[{{ comment.date|date:"Y.m.d H:i" }}]</span>
           </div>
 
           {% if user == comment.author %}
             <div id="actions-{{ comment.id }}" class="flex items-center space-x-3">
               <button type="button" onclick="toggleEdit('{{ comment.id }}')" class="text-gray-500 hover:text-black underline cursor-pointer">
-                edit
+                modifica
               </button>
               <button type="button" 
-                    onclick="deleteComment(this, '{{ comment.id }}')" 
-                    data-url="{% url 'blog_app:delete_comment' comment.id %}" 
-                    class="text-gray-500 hover:text-black underline cursor-pointer">
-                delete
+                      onclick="deleteComment(this, '{{ comment.id }}')" 
+                      data-url="{% url 'blog_app:delete_comment' comment.id %}" 
+                      class="text-gray-500 hover:text-black underline cursor-pointer">
+                elimina
               </button>
             </div>
           {% endif %}
@@ -132,7 +153,7 @@
                 onclick="toggleEdit('{{ comment.id }}')" 
                 class="text-gray-500 hover:text-black underline cursor-pointer"
               >
-                cancel
+                annulla
               </button>
               <button 
                 type="button" 
@@ -140,7 +161,7 @@
                 data-url="{% url 'blog_app:edit_comment' comment.id %}" 
                 class="text-gray-700 hover:text-black font-bold underline cursor-pointer"
               >
-                [save_changes]
+                [salva_modifiche]
               </button>
             </div>
           </div>
@@ -164,7 +185,7 @@
           {{ comment_form.as_p }}
         </div>
         <button type="submit" class="text-xs font-mono text-gray-700 hover:text-black underline underline-offset-4 cursor-pointer">
-          [+ submit_comment]
+          [+ invia_commento]
         </button>
       </form>
     {% else %}

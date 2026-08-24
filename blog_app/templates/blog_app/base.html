@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'css/output.css' %}">
-    <title>{% block title %}BLOG_SYS // TERMINAL{% endblock %}</title>
+    <title>{% block title %}BLOG_SYS // TERMINALE{% endblock %}</title>
 </head>
 <body class="font-mono bg-white text-gray-800 antialiased min-h-screen flex flex-col">
 
@@ -22,7 +22,7 @@
         <!-- Desktop Navigation Links (Visible on md and up) -->
         <div class="hidden md:flex items-center space-x-4">
           <a href="{% url 'blog_app:posts' %}" class="underline underline-offset-4 text-gray-600 hover:text-black">
-            archive
+            archivio
           </a>
 
           {% if user.is_superuser %}
@@ -52,12 +52,16 @@
 
           <span class="text-xs text-gray-400 select-none">•</span>
 
-          <!-- Auth Status -->
+          <!-- Auth Status & Smart Profile Link -->
           {% if user.is_authenticated %}
+            <a href="{% url 'blog_app:profile' user.username %}" class="underline underline-offset-4 text-gray-600 hover:text-black font-bold">
+              profilo [@{{ user.username }}]
+            </a>
+            <span class="text-xs text-gray-400 select-none">•</span>
             <form action="{% url 'accounts:logout' %}" method="post" class="inline">
               {% csrf_token %}
               <button type="submit" class="underline underline-offset-4 text-gray-600 hover:text-black cursor-pointer">
-                esci [{{ user.username }}]
+                esci
               </button>
             </form>
           {% else %}
@@ -77,7 +81,7 @@
             <div class="absolute right-0 mt-2 w-48 bg-white border border-gray-600 shadow-lg p-3 space-y-3 z-50 text-xs">
               <div>
                 <a href="{% url 'blog_app:posts' %}" class="block text-gray-700 hover:text-black underline">
-                  &gt; archive
+                  &gt; archivio
                 </a>
               </div>
 
@@ -107,12 +111,17 @@
                 </form>
               </div>
 
-              <div class="pt-2 border-t border-gray-200">
+              <div class="pt-2 border-t border-gray-200 space-y-2">
                 {% if user.is_authenticated %}
+                  <div>
+                    <a href="{% url 'blog_app:profile' user.username %}" class="block text-gray-700 hover:text-black font-bold underline">
+                      &gt; profilo [@{{ user.username }}]
+                    </a>
+                  </div>
                   <form action="{% url 'accounts:logout' %}" method="post">
                     {% csrf_token %}
                     <button type="submit" class="text-gray-700 hover:text-black underline cursor-pointer w-full text-left">
-                      &gt; esci [{{ user.username }}]
+                      &gt; esci
                     </button>
                   </form>
                 {% else %}
@@ -129,7 +138,7 @@
     </div>
   </header>
 
-  <!-- MAIN CONTENT CONTAINER (70% CENTERED) -->
+  <!-- MAIN CONTENT CONTAINER -->
   <main class="flex-grow w-[70%] min-w-[320px] mx-auto py-8">
     {% block content %}{% endblock content %}
   </main>
@@ -138,10 +147,10 @@
   <footer class="w-full border-t border-gray-300 mt-12">
     <div class="w-[70%] min-w-[320px] mx-auto py-8 text-xs text-gray-500 font-mono flex flex-wrap justify-between items-center gap-2">
       <div>
-        &copy; Personal Archive. Tutti i diritti riservati.
+        &copy; Archivio Personale. Tutti i diritti riservati.
       </div>
       <div class="text-gray-400">
-        STATUS: ONLINE // SYS_READY
+        STATO: ONLINE
       </div>
     </div>
   </footer>
