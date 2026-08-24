@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 class Tag(models.Model):
     """A Tag for filtering posts."""
     name = models.CharField(max_length=50, unique=True)
+    description = models.TextField(blank=True, null=True)
 
     class Meta:
         ordering = ['name']

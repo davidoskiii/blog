@@ -43,15 +43,16 @@ class PostForm(forms.ModelForm):
 class TagForm(forms.ModelForm):
     class Meta:
         model = Tag
-        fields = ['name']
-        labels = {'name': '// NOME_TAG'}
+        fields = ['name', 'description']
         widgets = {
             'name': forms.TextInput(attrs={
-                'class': INPUT_CLASSES,
-                'placeholder': 'es_tecnologia...'
+                'class': 'w-full p-2 border border-gray-600 bg-transparent text-sm text-gray-800 focus:outline-none focus:border-black'
+            }),
+            'description': forms.Textarea(attrs={
+                'class': 'w-full p-2 border border-gray-600 bg-transparent text-sm text-gray-800 focus:outline-none focus:border-black',
+                'rows': 3
             }),
         }
-
 
 class CommentForm(forms.ModelForm):
     class Meta:

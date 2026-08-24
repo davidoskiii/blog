@@ -22,7 +22,7 @@
         <!-- Desktop Navigation Links (Visible on md and up) -->
         <div class="hidden md:flex items-center space-x-4">
           <a href="{% url 'blog_app:posts' %}" class="underline underline-offset-4 text-gray-600 hover:text-black">
-            archivio
+            archive
           </a>
 
           {% if user.is_superuser %}
@@ -77,7 +77,7 @@
             <div class="absolute right-0 mt-2 w-48 bg-white border border-gray-600 shadow-lg p-3 space-y-3 z-50 text-xs">
               <div>
                 <a href="{% url 'blog_app:posts' %}" class="block text-gray-700 hover:text-black underline">
-                  &gt; archivio
+                  &gt; archive
                 </a>
               </div>
 
@@ -138,7 +138,7 @@
   <footer class="w-full border-t border-gray-300 mt-12">
     <div class="w-[70%] min-w-[320px] mx-auto py-8 text-xs text-gray-500 font-mono flex flex-wrap justify-between items-center gap-2">
       <div>
-        &copy; Blog Personale. Tutti i diritti riservati.
+        &copy; Personal Archive. Tutti i diritti riservati.
       </div>
       <div class="text-gray-400">
         STATUS: ONLINE // SYS_READY
