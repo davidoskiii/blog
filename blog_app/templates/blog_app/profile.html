@@ -3,30 +3,30 @@
 {% block content %}
 
 <!-- Back Navigation -->
-<div class="mb-8 font-mono text-xs">
+<div class="mb-6 sm:mb-8 font-mono text-xs">
   <a href="{% url 'blog_app:posts' %}" class="text-gray-500 hover:text-black underline underline-offset-4">
     &lt;-- back_to_archive
   </a>
 </div>
 
-<div class="w-full font-mono space-y-8">
+<div class="w-full font-mono space-y-6 sm:space-y-8">
 
   <!-- USER HEADER -->
   <div class="border-b border-gray-600 pb-6">
-    <div class="flex flex-wrap justify-between items-baseline gap-4 mb-2">
-      <h1 class="text-3xl font-mono font-bold uppercase tracking-wider text-gray-800">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-baseline gap-2 sm:gap-4 mb-3">
+      <h1 class="text-2xl sm:text-3xl font-mono font-bold uppercase tracking-wider text-gray-800 break-words">
         @{{ profile_user.username }}
       </h1>
 
       {% if user == profile_user %}
-        <a href="{% url 'blog_app:edit_profile' %}" class="text-xs text-gray-600 hover:text-black underline underline-offset-4">
+        <a href="{% url 'blog_app:edit_profile' %}" class="text-xs text-gray-600 hover:text-black underline underline-offset-4 shrink-0">
           + modifica_profilo
         </a>
       {% endif %}
     </div>
 
     <!-- Metadata Badges -->
-    <div class="flex flex-wrap items-center gap-4 text-xs text-gray-500 mb-4">
+    <div class="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-4 text-xs text-gray-500 mb-4">
       <span>[NOME: {{ profile_user.get_full_name|default:"n/d" }}]</span>
       <span>[RUOLO: 
         {% if profile_user.is_superuser %}
@@ -39,7 +39,7 @@
 
     <!-- Biography Box -->
     {% if profile.bio %}
-      <div class="text-xs text-gray-700 leading-relaxed">
+      <div class="text-xs text-gray-700 leading-relaxed break-words">
         // BIO: {{ profile.bio }}
       </div>
     {% else %}
@@ -50,35 +50,37 @@
   </div>
 
   <!-- HORIZONTAL TAB NAVIGATION BAR -->
-  <div class="flex flex-wrap items-center gap-6 border-b border-gray-400 pb-2 text-xs sm:text-sm font-mono uppercase tracking-wider">
-    {% if profile_user.is_superuser %}
+  <div class="overflow-x-auto border-b border-gray-400 pb-2">
+    <div class="flex items-center gap-4 sm:gap-6 text-xs sm:text-sm font-mono uppercase tracking-wider whitespace-nowrap min-w-max">
+      {% if profile_user.is_superuser %}
+        <button 
+          type="button" 
+          onclick="switchTab('posts')" 
+          id="tab-btn-posts" 
+          class="tab-btn text-black font-bold border-b-2 border-black pb-1 cursor-pointer transition-colors"
+        >
+          [POSTS_PUBBLICATI: {{ posts|length }}]
+        </button>
+      {% endif %}
+
       <button 
         type="button" 
-        onclick="switchTab('posts')" 
-        id="tab-btn-posts" 
-        class="tab-btn text-black font-bold border-b-2 border-black pb-1 cursor-pointer transition-colors"
+        onclick="switchTab('saves')" 
+        id="tab-btn-saves" 
+        class="tab-btn {% if not profile_user.is_superuser %}text-black font-bold border-b-2 border-black{% else %}text-gray-400 hover:text-black{% endif %} pb-1 cursor-pointer transition-colors"
       >
-        [POSTS_PUBBLICATI: {{ posts|length }}]
+        [SEGNALIBRI: {{ saved_posts|length }}]
       </button>
-    {% endif %}
 
-    <button 
-      type="button" 
-      onclick="switchTab('saves')" 
-      id="tab-btn-saves" 
-      class="tab-btn {% if not profile_user.is_superuser %}text-black font-bold border-b-2 border-black{% else %}text-gray-400 hover:text-black{% endif %} pb-1 cursor-pointer transition-colors"
-    >
-      [SEGNALIBRI: {{ saved_posts|length }}]
-    </button>
-
-    <button 
-      type="button" 
-      onclick="switchTab('comments')" 
-      id="tab-btn-comments" 
-      class="tab-btn text-gray-400 hover:text-black pb-1 cursor-pointer transition-colors"
-    >
-      [LOG_COMMENTI: {{ comments|length }}]
-    </button>
+      <button 
+        type="button" 
+        onclick="switchTab('comments')" 
+        id="tab-btn-comments" 
+        class="tab-btn text-gray-400 hover:text-black pb-1 cursor-pointer transition-colors"
+      >
+        [LOG_COMMENTI: {{ comments|length }}]
+      </button>
+    </div>
   </div>
 
   <!-- TAB PANELS -->
@@ -89,14 +91,14 @@
       <div class="space-y-4 text-xs">
         {% for post in posts %}
           <div class="border-b border-gray-200 pb-3">
-            <div class="flex flex-wrap items-center gap-3">
-              <span class="text-gray-500 font-mono">[{{ post.date|date:"Y.m.d" }}]</span>
-              <a href="{% url 'blog_app:post' post.id %}" class="font-mono font-bold text-gray-700 hover:text-black hover:underline uppercase tracking-wide text-sm">
+            <div class="flex flex-wrap items-baseline gap-2 sm:gap-3">
+              <span class="text-gray-500 font-mono text-xs shrink-0">[{{ post.date|date:"Y.m.d" }}]</span>
+              <a href="{% url 'blog_app:post' post.id %}" class="font-mono font-bold text-gray-700 hover:text-black hover:underline uppercase tracking-wide text-xs sm:text-sm break-words">
                 {{ post.title }}
               </a>
             </div>
 
-            <p class="text-gray-600 font-mono text-xs mt-1.5 line-clamp-2 leading-relaxed">
+            <p class="text-gray-600 font-mono text-xs mt-1.5 line-clamp-2 leading-relaxed break-words">
               {{ post.text }}
             </p>
           </div>
@@ -112,16 +114,16 @@
     <div class="space-y-4 text-xs">
       {% for post in saved_posts %}
         <div class="border-b border-gray-200 pb-3">
-          <div class="flex flex-wrap items-center justify-between gap-2">
-            <div class="flex flex-wrap items-center gap-3">
-              <span class="text-gray-500 font-mono">[{{ post.date|date:"Y.m.d" }}]</span>
-              <a href="{% url 'blog_app:post' post.id %}" class="font-mono font-bold text-gray-700 hover:text-black hover:underline uppercase tracking-wide text-sm">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div class="flex flex-wrap items-baseline gap-2 sm:gap-3">
+              <span class="text-gray-500 font-mono text-xs shrink-0">[{{ post.date|date:"Y.m.d" }}]</span>
+              <a href="{% url 'blog_app:post' post.id %}" class="font-mono font-bold text-gray-700 hover:text-black hover:underline uppercase tracking-wide text-xs sm:text-sm break-words">
                 {{ post.title }}
               </a>
             </div>
 
             {% if user == profile_user %}
-              <form action="{% url 'blog_app:toggle_save_post' post.id %}" method="post" class="inline">
+              <form action="{% url 'blog_app:toggle_save_post' post.id %}" method="post" class="inline shrink-0">
                 {% csrf_token %}
                 <button type="submit" class="text-xs text-gray-400 hover:text-black underline">
                   [rimuovi_salvato]
@@ -130,7 +132,7 @@
             {% endif %}
           </div>
 
-          <p class="text-gray-600 font-mono text-xs mt-1.5 line-clamp-2 leading-relaxed">
+          <p class="text-gray-600 font-mono text-xs mt-1.5 line-clamp-2 leading-relaxed break-words">
             {{ post.text }}
           </p>
         </div>
@@ -145,16 +147,16 @@
     <div class="space-y-4">
       {% for comment in comments %}
         <div class="border-b border-gray-200 pb-3 text-xs">
-          <div class="flex justify-between text-gray-400 mb-1">
-            <span>
+          <div class="flex flex-col sm:flex-row sm:justify-between gap-1 text-gray-400 mb-1">
+            <span class="break-words">
               Sul post: 
               <a href="{% url 'blog_app:post' comment.post.id %}" class="text-gray-700 underline font-bold">
                 {{ comment.post.title }}
               </a>
             </span>
-            <span>[{{ comment.date|date:"Y.m.d H:i" }}]</span>
+            <span class="shrink-0">[{{ comment.date|date:"Y.m.d H:i" }}]</span>
           </div>
-          <p class="text-gray-700 text-sm leading-relaxed">{{ comment.text }}</p>
+          <p class="text-gray-700 text-xs sm:text-sm leading-relaxed break-words">{{ comment.text }}</p>
         </div>
       {% empty %}
         <p class="text-xs text-gray-400 italic">// nessun commento inserito.</p>
