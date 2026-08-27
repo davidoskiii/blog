@@ -1,0 +1,11 @@
+<h2>Introduzione al Sistema</h2>
+<p>Questo è un paragrafo con un <a href="#">link di prova</a> e del <code>codice inline</code>.</p>
+
+<ul>
+  <li>Primo elemento della lista</li>
+  <li>Secondo elemento della lista</li>
+</ul>
+
+<blockquote>
+  "Questo è un blocco di citazione formattato."
+</blockquote>
