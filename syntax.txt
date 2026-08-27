@@ -9,3 +9,39 @@
 <blockquote>
   "Questo è un blocco di citazione formattato."
 </blockquote>
+
+<p>
+  This is a primary log entry demonstrating inline <strong>bold text</strong> alongside <em>italicized annotations</em> to confirm proper font rendering.
+</p>
+
+<h2>// SYSTEM ARCHITECTURE</h2>
+
+<p>
+  Below are two-column interactive layouts. On mobile screens they stack vertically, while on desktop displays they distribute cleanly across two equal columns.
+</p>
+
+<!-- Image Left, Text Right -->
+<div class="two-col">
+  <img src="https://picsum.photos/600/400" alt="Telemetry Visual">
+  <div>
+    <h3>Image on Left</h3>
+    <p>
+      This block contains an image on the left and descriptive text on the right. You can use <b>bold highlights</b> or <i>italic notes</i> directly inside columns.
+    </p>
+  </div>
+</div>
+
+<!-- Text Left, Image Right -->
+<div class="two-col">
+  <div>
+    <h3>Image on Right</h3>
+    <p>
+      To reverse the order, simply place the text container element before the image inside the <b>two-col</b> container.
+    </p>
+  </div>
+  <img src="https://picsum.photos/600/400?random=2" alt="Data Output Visual">
+</div>
+
+<p>
+  Standard text resumes normally below the two-column blocks.
+</p>

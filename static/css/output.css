@@ -808,6 +808,37 @@
       line-height: var(--tw-leading, var(--text-3xl--line-height));
     }
   }
+  .\[\&_\.two-col\]\:my-6 .two-col {
+    margin-block: calc(var(--spacing) * 6);
+  }
+  .\[\&_\.two-col\]\:flex .two-col {
+    display: flex;
+  }
+  .\[\&_\.two-col\]\:flex-col .two-col {
+    flex-direction: column;
+  }
+  .\[\&_\.two-col\]\:items-center .two-col {
+    align-items: center;
+  }
+  .\[\&_\.two-col\]\:gap-6 .two-col {
+    gap: calc(var(--spacing) * 6);
+  }
+  @media (width >= 48rem) {
+    .\[\&_\.two-col\]\:md\:flex-row .two-col {
+      flex-direction: row;
+    }
+  }
+  .\[\&_\.two-col_img\]\:my-0 .two-col img {
+    margin-block: 0px;
+  }
+  .\[\&_\.two-col\>\*\]\:w-full .two-col > * {
+    width: 100%;
+  }
+  @media (width >= 48rem) {
+    .\[\&_\.two-col\>\*\]\:md\:w-1\/2 .two-col > * {
+      width: calc(1 / 2 * 100%);
+    }
+  }
   .\[\&_a\]\:underline a {
     text-decoration-line: underline;
   }
@@ -818,6 +849,13 @@
     .\[\&_a\]\:hover\:text-black a:hover {
       color: var(--color-black);
     }
+  }
+  .\[\&_b\]\:font-bold b {
+    --tw-font-weight: var(--font-weight-bold);
+    font-weight: var(--font-weight-bold);
+  }
+  .\[\&_b\]\:text-gray-900 b {
+    color: var(--color-gray-900);
   }
   .\[\&_blockquote\]\:my-4 blockquote {
     margin-block: calc(var(--spacing) * 4);
@@ -847,6 +885,9 @@
   .\[\&_code\]\:text-xs code {
     font-size: var(--text-xs);
     line-height: var(--tw-leading, var(--text-xs--line-height));
+  }
+  .\[\&_em\]\:italic em {
+    font-style: italic;
   }
   .\[\&_h1\]\:mt-6 h1 {
     margin-top: calc(var(--spacing) * 6);
@@ -901,6 +942,9 @@
   .\[\&_h3\]\:font-bold h3 {
     --tw-font-weight: var(--font-weight-bold);
     font-weight: var(--font-weight-bold);
+  }
+  .\[\&_i\]\:italic i {
+    font-style: italic;
   }
   .\[\&_img\]\:mx-auto img {
     margin-inline: auto;
@@ -1029,6 +1073,13 @@
   .\[\&_select\]\:focus\:outline-none select:focus {
     --tw-outline-style: none;
     outline-style: none;
+  }
+  .\[\&_strong\]\:font-bold strong {
+    --tw-font-weight: var(--font-weight-bold);
+    font-weight: var(--font-weight-bold);
+  }
+  .\[\&_strong\]\:text-gray-900 strong {
+    color: var(--color-gray-900);
   }
   .\[\&_textarea\]\:box-border textarea {
     box-sizing: border-box;
