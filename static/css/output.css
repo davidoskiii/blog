@@ -808,9 +808,6 @@
       line-height: var(--tw-leading, var(--text-3xl--line-height));
     }
   }
-  .\[\&_a\]\:text-gray-800 a {
-    color: var(--color-gray-800);
-  }
   .\[\&_a\]\:underline a {
     text-decoration-line: underline;
   }
@@ -835,21 +832,11 @@
   .\[\&_blockquote\]\:pl-4 blockquote {
     padding-left: calc(var(--spacing) * 4);
   }
-  .\[\&_blockquote\]\:text-gray-600 blockquote {
-    color: var(--color-gray-600);
-  }
   .\[\&_blockquote\]\:italic blockquote {
     font-style: italic;
   }
-  .\[\&_code\]\:border code {
-    border-style: var(--tw-border-style);
-    border-width: 1px;
-  }
-  .\[\&_code\]\:border-gray-300 code {
-    border-color: var(--color-gray-300);
-  }
-  .\[\&_code\]\:bg-gray-100 code {
-    background-color: var(--color-gray-100);
+  .\[\&_code\]\:bg-gray-200 code {
+    background-color: var(--color-gray-200);
   }
   .\[\&_code\]\:px-1\.5 code {
     padding-inline: calc(var(--spacing) * 1.5);
@@ -860,9 +847,6 @@
   .\[\&_code\]\:text-xs code {
     font-size: var(--text-xs);
     line-height: var(--tw-leading, var(--text-xs--line-height));
-  }
-  .\[\&_code\]\:text-gray-900 code {
-    color: var(--color-gray-900);
   }
   .\[\&_h1\]\:mt-6 h1 {
     margin-top: calc(var(--spacing) * 6);
@@ -877,9 +861,6 @@
   .\[\&_h1\]\:font-bold h1 {
     --tw-font-weight: var(--font-weight-bold);
     font-weight: var(--font-weight-bold);
-  }
-  .\[\&_h1\]\:text-gray-800 h1 {
-    color: var(--color-gray-800);
   }
   .\[\&_h1\]\:uppercase h1 {
     text-transform: uppercase;
@@ -904,17 +885,8 @@
     --tw-font-weight: var(--font-weight-bold);
     font-weight: var(--font-weight-bold);
   }
-  .\[\&_h2\]\:text-gray-800 h2 {
-    color: var(--color-gray-800);
-  }
   .\[\&_h2\]\:uppercase h2 {
     text-transform: uppercase;
-  }
-  @media (width >= 40rem) {
-    .\[\&_h2\]\:sm\:text-xl h2 {
-      font-size: var(--text-xl);
-      line-height: var(--tw-leading, var(--text-xl--line-height));
-    }
   }
   .\[\&_h3\]\:mt-4 h3 {
     margin-top: calc(var(--spacing) * 4);
@@ -930,14 +902,27 @@
     --tw-font-weight: var(--font-weight-bold);
     font-weight: var(--font-weight-bold);
   }
-  .\[\&_h3\]\:text-gray-800 h3 {
-    color: var(--color-gray-800);
+  .\[\&_img\]\:mx-auto img {
+    margin-inline: auto;
   }
-  .\[\&_hr\]\:my-6 hr {
+  .\[\&_img\]\:my-6 img {
     margin-block: calc(var(--spacing) * 6);
   }
-  .\[\&_hr\]\:border-gray-400 hr {
-    border-color: var(--color-gray-400);
+  .\[\&_img\]\:block img {
+    display: block;
+  }
+  .\[\&_img\]\:h-auto img {
+    height: auto;
+  }
+  .\[\&_img\]\:max-w-full img {
+    max-width: 100%;
+  }
+  .\[\&_img\]\:border img {
+    border-style: var(--tw-border-style);
+    border-width: 1px;
+  }
+  .\[\&_img\]\:border-gray-300 img {
+    border-color: var(--color-gray-300);
   }
   .\[\&_input\]\:w-full input {
     width: 100%;
@@ -985,8 +970,8 @@
   .\[\&_label\]\:uppercase label {
     text-transform: uppercase;
   }
-  .\[\&_li\]\:text-gray-700 li {
-    color: var(--color-gray-700);
+  .\[\&_li\]\:mb-1 li {
+    margin-bottom: var(--spacing);
   }
   .\[\&_ol\]\:mb-4 ol {
     margin-bottom: calc(var(--spacing) * 4);
@@ -994,49 +979,26 @@
   .\[\&_ol\]\:list-decimal ol {
     list-style-type: decimal;
   }
-  :where(.\[\&_ol\]\:space-y-1 ol > :not(:last-child)) {
-    --tw-space-y-reverse: 0;
-    margin-block-start: calc(var(--spacing) * var(--tw-space-y-reverse));
-    margin-block-end: calc(var(--spacing) * calc(1 - var(--tw-space-y-reverse)));
-  }
   .\[\&_ol\]\:pl-5 ol {
     padding-left: calc(var(--spacing) * 5);
   }
   .\[\&_p\]\:mb-4 p {
     margin-bottom: calc(var(--spacing) * 4);
   }
-  .\[\&_p\]\:leading-relaxed p {
-    --tw-leading: var(--leading-relaxed);
-    line-height: var(--leading-relaxed);
-  }
-  .\[\&_pre\]\:my-4 pre {
-    margin-block: calc(var(--spacing) * 4);
+  .\[\&_pre\]\:mb-4 pre {
+    margin-bottom: calc(var(--spacing) * 4);
   }
   .\[\&_pre\]\:overflow-x-auto pre {
     overflow-x: auto;
   }
-  .\[\&_pre\]\:border pre {
-    border-style: var(--tw-border-style);
-    border-width: 1px;
-  }
-  .\[\&_pre\]\:border-gray-400 pre {
-    border-color: var(--color-gray-400);
-  }
-  .\[\&_pre\]\:bg-gray-100 pre {
-    background-color: var(--color-gray-100);
+  .\[\&_pre\]\:bg-gray-800 pre {
+    background-color: var(--color-gray-800);
   }
   .\[\&_pre\]\:p-4 pre {
     padding: calc(var(--spacing) * 4);
   }
-  .\[\&_pre_code\]\:border-none pre code {
-    --tw-border-style: none;
-    border-style: none;
-  }
-  .\[\&_pre_code\]\:bg-transparent pre code {
-    background-color: transparent;
-  }
-  .\[\&_pre_code\]\:p-0 pre code {
-    padding: 0px;
+  .\[\&_pre\]\:text-gray-100 pre {
+    color: var(--color-gray-100);
   }
   .\[\&_select\]\:w-full select {
     width: 100%;
@@ -1106,11 +1068,6 @@
   }
   .\[\&_ul\]\:list-disc ul {
     list-style-type: disc;
-  }
-  :where(.\[\&_ul\]\:space-y-1 ul > :not(:last-child)) {
-    --tw-space-y-reverse: 0;
-    margin-block-start: calc(var(--spacing) * var(--tw-space-y-reverse));
-    margin-block-end: calc(var(--spacing) * calc(1 - var(--tw-space-y-reverse)));
   }
   .\[\&_ul\]\:pl-5 ul {
     padding-left: calc(var(--spacing) * 5);
