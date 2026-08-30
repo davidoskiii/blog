@@ -137,7 +137,7 @@ def like_post(request, post_id):
 
 @superuser_required
 def new_post(request):
-    "Create Post"
+    """Create Post"""
 
     if request.method != 'POST':
         # No data submitted; create blank form
@@ -147,7 +147,10 @@ def new_post(request):
         form = PostForm(data=request.POST) 
 
         if form.is_valid():
-            form.save()
+            post = form.save(commit=False)
+            post.author = request.user
+            post.save()
+            form.save_m2m()  # Saves ManyToMany fields like tags
             return redirect('blog_app:posts')
 
     context = {'form': form}

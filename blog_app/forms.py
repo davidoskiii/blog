@@ -33,7 +33,7 @@ class PostForm(forms.ModelForm):
                 'placeholder': 'inserisci_titolo...'
             }),
             'text': forms.Textarea(attrs={
-                'rows': 5,
+                'rows': 12,
                 'class': INPUT_CLASSES,
                 'placeholder': 'scrivi_contenuto...'
             }),
