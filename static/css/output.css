@@ -17,7 +17,6 @@
     --color-gray-600: oklch(44.6% 0.03 256.802);
     --color-gray-700: oklch(37.3% 0.034 259.733);
     --color-gray-800: oklch(27.8% 0.033 256.848);
-    --color-gray-900: oklch(21% 0.034 264.665);
     --color-black: #000;
     --color-white: #fff;
     --spacing: 0.25rem;
@@ -848,6 +847,28 @@
   .\[\&_code\]\:text-xs code {
     font-size: var(--text-xs);
     line-height: var(--tw-leading, var(--text-xs--line-height));
+  }
+  .\[\&_figcaption\]\:-mt-4 figcaption {
+    margin-top: calc(var(--spacing) * -4);
+  }
+  .\[\&_figcaption\]\:mb-6 figcaption {
+    margin-bottom: calc(var(--spacing) * 6);
+  }
+  .\[\&_figcaption\]\:text-center figcaption {
+    text-align: center;
+  }
+  .\[\&_figcaption\]\:text-xs figcaption {
+    font-size: var(--text-xs);
+    line-height: var(--tw-leading, var(--text-xs--line-height));
+  }
+  .\[\&_figcaption\]\:text-gray-500 figcaption {
+    color: var(--color-gray-500);
+  }
+  .\[\&_figcaption\]\:italic figcaption {
+    font-style: italic;
+  }
+  .\[\&_figure\]\:mb-6 figure {
+    margin-bottom: calc(var(--spacing) * 6);
   }
   .\[\&_h1\]\:mt-6 h1 {
     margin-top: calc(var(--spacing) * 6);
