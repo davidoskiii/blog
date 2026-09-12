@@ -22,10 +22,11 @@ class PostForm(forms.ModelForm):
 
     class Meta:
         model = Post
-        fields = ['title', 'tags', 'text']
+        fields = ['title', 'tags', 'text', 'is_published']  # <-- ADDED is_published HERE
         labels = {
             'title': '// TITOLO',
             'text': '// CONTENUTO_POST',
+            'is_published': '// PUBBLICA_SUBITO',  # <-- ADDED LABEL
         }
         widgets = {
             'title': forms.TextInput(attrs={
@@ -36,6 +37,9 @@ class PostForm(forms.ModelForm):
                 'rows': 12,
                 'class': INPUT_CLASSES,
                 'placeholder': 'scrivi_contenuto...'
+            }),
+            'is_published': forms.CheckboxInput(attrs={
+                'class': 'h-4 w-4 text-black focus:ring-black border-gray-600 rounded'
             }),
         }
 

@@ -21,13 +21,46 @@
   <form action="{% url 'blog_app:edit_post' post.id %}" method="post" class="space-y-6 w-full">
       {% csrf_token %}
       
-      <!-- Django Form Styling Wrapper -->
-      <div class="space-y-4 text-xs w-full
-                  [&_label]:block [&_label]:text-gray-500 [&_label]:uppercase [&_label]:tracking-wider [&_label]:mb-1
-                  [&_input]:w-full [&_input]:p-2 [&_input]:border [&_input]:border-gray-600 [&_input]:bg-transparent [&_input]:text-sm [&_input]:text-gray-800 [&_input]:focus:outline-none [&_input]:focus:border-black
-                  [&_select]:w-full [&_select]:p-2 [&_select]:border [&_select]:border-gray-600 [&_select]:bg-transparent [&_select]:text-sm [&_select]:text-gray-800 [&_select]:focus:outline-none [&_select]:focus:border-black
-                  [&_textarea]:w-full [&_textarea]:p-2 [&_textarea]:border [&_textarea]:border-gray-600 [&_textarea]:bg-transparent [&_textarea]:text-sm [&_textarea]:text-gray-800 [&_textarea]:focus:outline-none [&_textarea]:focus:border-black">
-        {{ form.as_div }}
+      <!-- Explicit Field Rendering -->
+      <div class="space-y-4 text-xs w-full">
+        <!-- Title Field -->
+        <div>
+          <label for="{{ form.title.id_for_label }}" class="block text-gray-500 uppercase tracking-wider mb-1">
+            {{ form.title.label }}:
+          </label>
+          {{ form.title }}
+          {% if form.title.errors %}<p class="text-red-500 text-xs mt-1">{{ form.title.errors.0 }}</p>{% endif %}
+        </div>
+
+        <!-- Tags Field -->
+        <div>
+          <label for="{{ form.tags.id_for_label }}" class="block text-gray-500 uppercase tracking-wider mb-1">
+            {{ form.tags.label }}:
+          </label>
+          {{ form.tags }}
+          {% if form.tags.help_text %}
+            <p class="text-gray-400 text-xs mt-1">{{ form.tags.help_text }}</p>
+          {% endif %}
+          {% if form.tags.errors %}<p class="text-red-500 text-xs mt-1">{{ form.tags.errors.0 }}</p>{% endif %}
+        </div>
+
+        <!-- Text Content Field -->
+        <div>
+          <label for="{{ form.text.id_for_label }}" class="block text-gray-500 uppercase tracking-wider mb-1">
+            {{ form.text.label }}:
+          </label>
+          {{ form.text }}
+          {% if form.text.errors %}<p class="text-red-500 text-xs mt-1">{{ form.text.errors.0 }}</p>{% endif %}
+        </div>
+
+        <!-- Inline Checkbox Field: Checkbox First, Label Second -->
+        <div class="flex items-center gap-2 pt-2">
+          <label for="{{ form.is_published.id_for_label }}" class="text-gray-500 uppercase tracking-wider cursor-pointer mb-0">
+            {{ form.is_published.label }}:
+          </label>
+          {{ form.is_published }}
+          {% if form.is_published.errors %}<p class="text-red-500 text-xs ml-2">{{ form.is_published.errors.0 }}</p>{% endif %}
+        </div>
       </div>
 
       <!-- Form Actions Bar -->
