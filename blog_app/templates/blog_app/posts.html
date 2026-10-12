@@ -3,7 +3,7 @@
 {% block content %}
 
 <!-- Log Title Header -->
-<div class="flex flex-col sm:flex-row sm:items-baseline justify-between border-b border-gray-600 pb-3 mb-6 sm:mb-8 gap-3 sm:gap-4">
+<div class="flex flex-col sm:flex-row sm:items-baseline justify-between border-b border-gray-600 pb-3 mb-6 gap-3 sm:gap-4">
   <h1 class="text-2xl sm:text-3xl font-mono uppercase tracking-wider text-gray-600 break-words">
     LOG <span class="block sm:inline text-xs sm:text-sm font-normal lowercase text-gray-400 mt-1 sm:mt-0">voci // archivio</span>
   </h1>
@@ -20,30 +20,71 @@
   {% endif %}
 </div>
 
-<!-- Flat Post Log List -->
-<div class="space-y-3 sm:space-y-2 font-mono text-sm">
-
-{% for post in posts %}
-  <div class="flex flex-wrap items-baseline gap-x-2 sm:gap-x-3 gap-y-1 py-2 sm:py-1 border-b border-gray-100 sm:border-b-0">
-    <span class="text-gray-500 font-mono text-xs sm:text-sm shrink-0">[{{ post.date|date:"Y.m.d" }}]</span>
-    
-    <a href="{% url 'blog_app:post' post.id %}" class="font-mono font-bold text-gray-600 hover:text-black hover:underline uppercase tracking-wide text-sm sm:text-base leading-snug break-words">
-      {{ post.title }}
-    </a>
-    
-    {% if post.tags.all %}
-      <span class="text-xs text-gray-400 font-mono break-words">
-        [TAG: 
-        {% for tag in post.tags.all %}
-          <a href="{% url 'blog_app:tag' tag.id %}" class="hover:text-gray-500 hover:underline">{{ tag.name|lower }}</a>{% if not forloop.last %}, {% endif %}
-        {% endfor %}
-        ]
-      </span>
-    {% endif %}
+<!-- Log Table Container -->
+<div class="w-full font-mono text-xs sm:text-sm">
+  
+  <!-- Table Header -->
+  <div class="grid grid-cols-12 gap-2 pb-1 text-xs text-gray-500 font-mono border-b border-gray-600 uppercase tracking-wider mb-1">
+    <div class="col-span-4 sm:col-span-3 md:col-span-2">data</div>
+    <div class="col-span-8 sm:col-span-6 md:col-span-6">titolo</div>
+    <div class="hidden sm:block sm:col-span-3 md:col-span-4">tags</div>
   </div>
-{% empty %}
-  <p class="text-xs text-gray-500 italic">// nessun post registrato nell'archivio.</p>
-{% endfor %}
+
+  <!-- Table Body -->
+  {% for post in posts %}
+    <div class="grid grid-cols-12 gap-2 py-1 sm:py-0.5 border-b border-gray-100 sm:border-b-0 items-baseline">
+      
+      <!-- Date Column with Conditional Year -->
+      <div class="col-span-4 sm:col-span-3 md:col-span-2 font-mono text-xs sm:text-sm shrink-0">
+        {% ifchanged post.date|date:"Y" %}
+          <span class="text-gray-500 font-mono">[{{ post.date|date:"Y" }} {{ post.date|date:"b d" }}]</span>
+        {% else %}
+          <span class="text-gray-500 font-mono">[<span class="invisible select-none">2026</span> {{ post.date|date:"b d" }}]</span>
+        {% endifchanged %}
+      </div>
+
+      <!-- Title Column with Mobile Info Button -->
+      <div class="col-span-8 sm:col-span-6 md:col-span-6 flex items-baseline justify-between sm:block relative">
+        <a href="{% url 'blog_app:post' post.id %}" class="font-mono font-bold text-gray-600 hover:text-black hover:underline uppercase tracking-wide text-sm sm:text-base leading-snug break-words">
+          {{ post.title }}
+        </a>
+
+        <!-- Mobile Info Button (Visible only on small screens) -->
+        <details class="sm:hidden relative inline-block ml-2 align-middle">
+          <summary class="list-none cursor-pointer text-[10px] font-mono text-gray-500 border border-gray-400 px-1 py-0.5 rounded hover:text-black hover:border-black transition-colors select-none">
+            [i]
+          </summary>
+          <div class="absolute right-0 top-full mt-1 z-30 bg-white border border-gray-600 p-2 shadow-sm text-xs text-gray-400 font-mono w-48 break-words">
+            {% if post.tags.all %}
+              [TAG: 
+              {% for tag in post.tags.all %}
+                <a href="{% url 'blog_app:tag' tag.id %}" class="hover:text-gray-500 hover:underline">{{ tag.name|lower }}</a>{% if not forloop.last %}, {% endif %}
+              {% endfor %}
+              ]
+            {% else %}
+              -
+            {% endif %}
+          </div>
+        </details>
+      </div>
+
+      <!-- Tags Column: Hidden on small viewports, visible on sm: and up -->
+      <div class="hidden sm:block sm:col-span-3 md:col-span-4 text-xs text-gray-400 font-mono break-words">
+        {% if post.tags.all %}
+          [TAG: 
+          {% for tag in post.tags.all %}
+            <a href="{% url 'blog_app:tag' tag.id %}" class="hover:text-gray-500 hover:underline">{{ tag.name|lower }}</a>{% if not forloop.last %}, {% endif %}
+          {% endfor %}
+          ]
+        {% else %}
+          -
+        {% endif %}
+      </div>
+
+    </div>
+  {% empty %}
+    <p class="text-xs text-gray-500 italic py-2">// nessun post registrato nell'archivio.</p>
+  {% endfor %}
 
 </div>
 
