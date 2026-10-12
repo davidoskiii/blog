@@ -4,7 +4,7 @@
 
 <!-- Back Navigation -->
 <div class="mb-6 sm:mb-8 font-mono text-xs">
-  <a href="{% url 'blog_app:posts' %}" class="text-gray-500 hover:text-black underline underline-offset-4">
+  <a href="{% url 'blog_app:posts' %}" class="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white underline underline-offset-4">
     &lt;-- back_to_log_archive
   </a>
 </div>
@@ -12,12 +12,12 @@
 <div class="w-full font-mono">
 
   <!-- Header Risultati / Log Header -->
-  <div class="flex flex-col sm:flex-row sm:justify-between sm:items-baseline border-b border-gray-600 pb-2 mb-6 sm:mb-8 gap-2">
-    <h1 class="text-lg sm:text-2xl font-mono uppercase tracking-wider text-gray-700 break-words">
-      RISULTATI_RICERCA <span class="block sm:inline text-xs font-normal lowercase text-gray-400">// ricerca: "{{ query }}"</span>
+  <div class="flex flex-col sm:flex-row sm:justify-between sm:items-baseline border-b border-gray-600 dark:border-gray-700 pb-2 mb-6 sm:mb-8 gap-2">
+    <h1 class="text-lg sm:text-2xl font-mono uppercase tracking-wider text-gray-700 dark:text-gray-200 break-words">
+      RISULTATI_RICERCA <span class="block sm:inline text-xs font-normal lowercase text-gray-400 dark:text-gray-500">// ricerca: "{{ query }}"</span>
     </h1>
-    <span class="text-xs text-gray-500 shrink-0">
-      RISULTATI: [<strong>{{ posts|length }}</strong>]
+    <span class="text-xs text-gray-500 dark:text-gray-400 shrink-0">
+      RISULTATI: [<strong class="text-gray-800 dark:text-gray-200">{{ posts|length }}</strong>]
     </span>
   </div>
 
@@ -25,32 +25,32 @@
     <!-- Flat Post Log List with Snippets -->
     <div class="space-y-4 text-xs font-mono">
       {% for post in posts %}
-        <div class="border-b border-gray-200 pb-3">
+        <div class="border-b border-gray-200 dark:border-gray-800 pb-3">
           <div class="flex flex-wrap items-baseline gap-2 sm:gap-3">
-            <span class="text-gray-500 font-mono text-xs shrink-0">[{{ post.date|date:"Y.m.d" }}]</span>
-            <a href="{% url 'blog_app:post' post.id %}" class="font-mono font-bold text-gray-700 hover:text-black hover:underline uppercase tracking-wide text-xs sm:text-sm break-words">
+            <span class="text-gray-500 dark:text-gray-400 font-mono text-xs shrink-0">[{{ post.date|date:"Y.m.d" }}]</span>
+            <a href="{% url 'blog_app:post' post.id %}" class="font-mono font-bold text-gray-700 dark:text-gray-200 hover:text-black dark:hover:text-white hover:underline uppercase tracking-wide text-xs sm:text-sm break-words">
               {{ post.title }}
             </a>
 
             {% if post.tags.all %}
-              <span class="text-xs text-gray-400 font-mono break-words">
+              <span class="text-xs text-gray-400 dark:text-gray-500 font-mono break-words">
                 [TAG: 
                 {% for tag in post.tags.all %}
-                  <a href="{% url 'blog_app:tag' tag.id %}" class="hover:text-gray-500 hover:underline">{{ tag.name|lower }}</a>{% if not forloop.last %}, {% endif %}
+                  <a href="{% url 'blog_app:tag' tag.id %}" class="hover:text-gray-500 dark:hover:text-gray-300 hover:underline">{{ tag.name|lower }}</a>{% if not forloop.last %}, {% endif %}
                 {% endfor %}
                 ]
               </span>
             {% endif %}
           </div>
 
-          <p class="text-gray-600 font-mono text-xs mt-1.5 line-clamp-2 leading-relaxed break-words">
+          <p class="text-gray-600 dark:text-gray-400 font-mono text-xs mt-1.5 line-clamp-2 leading-relaxed break-words">
             {{ post.text|striptags }}
           </p>
         </div>
       {% endfor %}
     </div>
   {% else %}
-    <div class="text-xs text-gray-400 italic">
+    <div class="text-xs text-gray-400 dark:text-gray-500 italic">
       // nessun risultato trovato per la ricerca: "{{ query }}".
     </div>
   {% endif %}

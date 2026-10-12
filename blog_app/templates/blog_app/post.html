@@ -4,7 +4,7 @@
 
 <!-- Back Navigation -->
 <div class="mb-6 sm:mb-8 font-mono text-xs">
-  <a href="{% url 'blog_app:posts' %}" class="text-gray-500 hover:text-black underline underline-offset-4 inline-block py-1">
+  <a href="{% url 'blog_app:posts' %}" class="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white underline underline-offset-4 inline-block py-1">
     &lt;-- back_to_log_archive
   </a>
 </div>
@@ -13,72 +13,71 @@
 <article class="font-mono mb-10 sm:mb-12">
   
   <!-- Header / Metadata -->
-  <header class="border-b border-gray-600 pb-4 mb-6">
+  <header class="border-b border-gray-600 dark:border-gray-700 pb-4 mb-6">
     <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 sm:gap-4 mb-3">
-      <h1 class="text-xl sm:text-2xl md:text-3xl font-mono font-bold uppercase tracking-wider text-gray-700 leading-tight break-words min-w-0">
+      <h1 class="text-xl sm:text-2xl md:text-3xl font-mono font-bold uppercase tracking-wider text-gray-700 dark:text-gray-200 leading-tight break-words min-w-0">
         {{ post.title }}
       </h1>
 
       {% if user.is_superuser %}
-        <a href="{% url 'blog_app:edit_post' post.id %}" class="text-xs text-gray-600 hover:text-black underline underline-offset-4 shrink-0 self-start sm:self-auto py-1">
+        <a href="{% url 'blog_app:edit_post' post.id %}" class="text-xs text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white underline underline-offset-4 shrink-0 self-start sm:self-auto py-1">
           + modifica_post
         </a>
       {% endif %}
     </div>
 
     <!-- Metadata Inline -->
-    <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1.5 text-xs text-gray-500">
+    <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1.5 text-xs text-gray-500 dark:text-gray-400">
       <span class="shrink-0">[{{ post.date|date:"Y.m.d H:i" }}]</span>
       
       {% if post.author %}
-        <span class="break-words">[AUTORE: <a href="{% url 'blog_app:profile' post.author.username %}" class="underline hover:text-black">@{{ post.author.username }}</a>]</span>
+        <span class="break-words">[AUTORE: <a href="{% url 'blog_app:profile' post.author.username %}" class="underline hover:text-black dark:hover:text-white">@{{ post.author.username }}</a>]</span>
       {% endif %}
 
       {% if post.tags.all %}
         <span class="break-words">[TAG: 
           {% for tag in post.tags.all %}
-            <a href="{% url 'blog_app:tag' tag.id %}" class="underline hover:text-black">{{ tag.name|lower }}</a>{% if not forloop.last %}, {% endif %}
+            <a href="{% url 'blog_app:tag' tag.id %}" class="underline hover:text-black dark:hover:text-white">{{ tag.name|lower }}</a>{% if not forloop.last %}, {% endif %}
           {% endfor %}
         ]</span>
       {% endif %}
     </div>
   </header>
 
-<!-- Post Body Text -->
-<!-- Post Body Text -->
-<div class="text-gray-700 leading-relaxed text-sm sm:text-base mb-8 font-mono break-words
+<!-- Post Body Text with Dark Mode Typography -->
+<div class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm sm:text-base mb-8 font-mono break-words
   [&_p]:mb-4 
-  [&_h1]:text-xl [&_h1]:sm:text-2xl [&_h1]:font-bold [&_h1]:mt-6 [&_h1]:mb-3 [&_h1]:uppercase 
-  [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mt-5 [&_h2]:mb-2 [&_h2]:uppercase 
-  [&_h3]:text-base [&_h3]:font-bold [&_h3]:mt-4 [&_h3]:mb-2 
-  [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-black 
+  [&_h1]:text-xl [&_h1]:sm:text-2xl [&_h1]:font-bold [&_h1]:mt-6 [&_h1]:mb-3 [&_h1]:uppercase [&_h1]:text-gray-900 dark:[&_h1]:text-gray-100 
+  [&_h2]:text-lg [&_h2]:font-bold [&_h2]:mt-5 [&_h2]:mb-2 [&_h2]:uppercase [&_h2]:text-gray-900 dark:[&_h2]:text-gray-100 
+  [&_h3]:text-base [&_h3]:font-bold [&_h3]:mt-4 [&_h3]:mb-2 [&_h3]:text-gray-900 dark:[&_h3]:text-gray-100 
+  [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-black dark:[&_a]:hover:text-white 
   [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:mb-4 
   [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:mb-4 
   [&_li]:mb-1 
-  [&_blockquote]:border-l-2 [&_blockquote]:border-gray-600 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:my-4 
-  [&_code]:bg-gray-200 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:text-xs 
-  [&_pre]:bg-gray-800 [&_pre]:text-gray-100 [&_pre]:p-4 [&_pre]:overflow-x-auto [&_pre]:mb-4
-  [&_img]:max-w-full [&_img]:md:max-w-lg [&_img]:h-auto [&_img]:block [&_img]:my-6 [&_img]:mx-auto [&_img]:border [&_img]:border-gray-300
+  [&_blockquote]:border-l-2 [&_blockquote]:border-gray-600 dark:[&_blockquote]:border-gray-500 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:my-4 
+  [&_code]:bg-gray-200 dark:[&_code]:bg-gray-800 dark:[&_code]:text-gray-200 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:text-xs 
+  [&_pre]:bg-gray-800 dark:[&_pre]:bg-gray-900 [&_pre]:text-gray-100 [&_pre]:p-4 [&_pre]:overflow-x-auto [&_pre]:mb-4 [&_pre]:border [&_pre]:border-gray-700
+  [&_img]:max-w-full [&_img]:md:max-w-lg [&_img]:h-auto [&_img]:block [&_img]:my-6 [&_img]:mx-auto [&_img]:border [&_img]:border-gray-300 dark:[&_img]:border-gray-700
   [&_figure]:mb-6
-  [&_figcaption]:text-xs [&_figcaption]:text-gray-500 [&_figcaption]:text-center [&_figcaption]:-mt-4 [&_figcaption]:mb-6 [&_figcaption]:italic">
+  [&_figcaption]:text-xs [&_figcaption]:text-gray-500 dark:[&_figcaption]:text-gray-400 [&_figcaption]:text-center [&_figcaption]:-mt-4 [&_figcaption]:mb-6 [&_figcaption]:italic">
   {{ post.text|safe }}
 </div>
 
   <!-- LIKES & ACTIONS BAR -->
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 border-t border-gray-300">
-    <div class="flex flex-wrap items-center gap-3 text-xs text-gray-600">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-4 border-t border-gray-300 dark:border-gray-800">
+    <div class="flex flex-wrap items-center gap-3 text-xs text-gray-600 dark:text-gray-400">
       <div class="flex flex-wrap items-center gap-3">
-        <span>// MI_PIACE: <strong class="text-gray-800">{{ post.total_likes }}</strong></span>
+        <span>// MI_PIACE: <strong class="text-gray-800 dark:text-gray-200">{{ post.total_likes }}</strong></span>
 
         {% if user.is_authenticated %}
           <form action="{% url 'blog_app:like_post' post.id %}" method="post" class="inline">
             {% csrf_token %}
             {% if is_liked %}
-              <button type="submit" class="text-gray-500 hover:text-black underline underline-offset-4 cursor-pointer py-1">
+              <button type="submit" class="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white underline underline-offset-4 cursor-pointer py-1">
                 [- rimuovi_mi_piace]
               </button>
             {% else %}
-              <button type="submit" class="text-gray-600 hover:text-black underline underline-offset-4 cursor-pointer py-1">
+              <button type="submit" class="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white underline underline-offset-4 cursor-pointer py-1">
                 [+ aggiungi_mi_piace]
               </button>
             {% endif %}
@@ -87,8 +86,8 @@
       </div>
 
       {% if not user.is_authenticated %}
-        <span class="text-gray-400">
-          // <a href="{% url 'accounts:login' %}" class="underline hover:text-black">accedi</a> per interagire.
+        <span class="text-gray-400 dark:text-gray-500">
+          // <a href="{% url 'accounts:login' %}" class="underline hover:text-black dark:hover:text-white">accedi</a> per interagire.
         </span>
       {% endif %}
     </div>
@@ -97,11 +96,11 @@
       <form action="{% url 'blog_app:toggle_save_post' post.id %}" method="post" class="inline self-start sm:self-auto">
         {% csrf_token %}
         {% if post in user.profile.saved_posts.all %}
-          <button type="submit" class="text-xs text-gray-600 hover:text-black underline py-1">
+          <button type="submit" class="text-xs text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white underline py-1">
             [- rimuovi_segnalibro]
           </button>
         {% else %}
-          <button type="submit" class="text-xs text-gray-600 hover:text-black underline py-1">
+          <button type="submit" class="text-xs text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white underline py-1">
             [+ salva_post]
           </button>
         {% endif %}
@@ -112,12 +111,12 @@
 </article>
 
 <!-- COMMENTS SECTION -->
-<section class="font-mono mt-10 sm:mt-12 pt-6 border-t border-gray-600">
-  <div class="flex flex-row justify-between items-baseline mb-6 border-b border-gray-200 pb-2 gap-2">
-    <h3 class="text-base sm:text-lg font-mono uppercase tracking-wider text-gray-600">
-      COMMENTI <span class="block sm:inline text-xs font-normal lowercase text-gray-400">// discussione</span>
+<section class="font-mono mt-10 sm:mt-12 pt-6 border-t border-gray-600 dark:border-gray-700">
+  <div class="flex flex-row justify-between items-baseline mb-6 border-b border-gray-200 dark:border-gray-800 pb-2 gap-2">
+    <h3 class="text-base sm:text-lg font-mono uppercase tracking-wider text-gray-600 dark:text-gray-300">
+      COMMENTI <span class="block sm:inline text-xs font-normal lowercase text-gray-400 dark:text-gray-500">// discussione</span>
     </h3>
-    <span class="text-xs text-gray-500 shrink-0">
+    <span class="text-xs text-gray-500 dark:text-gray-400 shrink-0">
       TOTALE: [<span id="comments-count">{{ comments.count }}</span>]
     </span>
   </div>
@@ -125,24 +124,24 @@
   <!-- Comments List -->
   <div id="comments-container" class="space-y-4 mb-8 sm:mb-10">
     {% for comment in comments %}
-      <div id="comment-card-{{ comment.id }}" class="border-b border-gray-200 pb-4">
+      <div id="comment-card-{{ comment.id }}" class="border-b border-gray-200 dark:border-gray-800 pb-4">
         
         <!-- Header: Author & Actions -->
         <div class="flex flex-wrap justify-between items-baseline gap-2 text-xs mb-2">
           <div class="flex flex-wrap items-baseline gap-x-2">
-            <a href="{% url 'blog_app:profile' comment.author.username %}" class="text-gray-700 font-bold underline hover:text-black">@{{ comment.author.username }}</a>
-            <span class="text-gray-400 shrink-0">[{{ comment.date|date:"Y.m.d H:i" }}]</span>
+            <a href="{% url 'blog_app:profile' comment.author.username %}" class="text-gray-700 dark:text-gray-300 font-bold underline hover:text-black dark:hover:text-white">@{{ comment.author.username }}</a>
+            <span class="text-gray-400 dark:text-gray-500 shrink-0">[{{ comment.date|date:"Y.m.d H:i" }}]</span>
           </div>
 
           {% if user == comment.author %}
             <div id="actions-{{ comment.id }}" class="flex items-center space-x-3 shrink-0">
-              <button type="button" onclick="toggleEdit('{{ comment.id }}')" class="text-gray-500 hover:text-black underline cursor-pointer py-1">
+              <button type="button" onclick="toggleEdit('{{ comment.id }}')" class="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white underline cursor-pointer py-1">
                 modifica
               </button>
               <button type="button" 
                       onclick="deleteComment(this, '{{ comment.id }}')" 
                       data-url="{% url 'blog_app:delete_comment' comment.id %}" 
-                      class="text-gray-500 hover:text-black underline cursor-pointer py-1">
+                      class="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white underline cursor-pointer py-1">
                 elimina
               </button>
             </div>
@@ -150,7 +149,7 @@
         </div>
 
         <!-- 1. Text -->
-        <p id="comment-text-{{ comment.id }}" class="text-xs sm:text-sm text-gray-600 leading-relaxed break-words">
+        <p id="comment-text-{{ comment.id }}" class="text-xs sm:text-sm text-gray-600 dark:text-gray-300 leading-relaxed break-words">
           {{ comment.text }}
         </p>
 
@@ -159,7 +158,7 @@
           <div id="edit-form-{{ comment.id }}" class="hidden mt-2 space-y-2">
             <textarea 
               id="edit-input-{{ comment.id }}" 
-              class="w-full p-2 border border-gray-600 font-mono text-xs sm:text-sm text-gray-800 bg-transparent focus:outline-none focus:border-black box-border" 
+              class="w-full p-2 border border-gray-600 dark:border-gray-700 font-mono text-xs sm:text-sm text-gray-800 dark:text-gray-200 bg-transparent focus:outline-none focus:border-black dark:focus:border-gray-400 box-border" 
               rows="3"
             >{{ comment.text }}</textarea>
             
@@ -167,7 +166,7 @@
               <button 
                 type="button" 
                 onclick="toggleEdit('{{ comment.id }}')" 
-                class="text-gray-500 hover:text-black underline cursor-pointer py-1"
+                class="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white underline cursor-pointer py-1"
               >
                 annulla
               </button>
@@ -175,7 +174,7 @@
                 type="button" 
                 onclick="saveComment(this, '{{ comment.id }}')" 
                 data-url="{% url 'blog_app:edit_comment' comment.id %}" 
-                class="text-gray-700 hover:text-black font-bold underline cursor-pointer py-1"
+                class="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white font-bold underline cursor-pointer py-1"
               >
                 [salva_modifiche]
               </button>
@@ -185,28 +184,28 @@
 
       </div>
     {% empty %}
-      <div id="empty-comments-msg" class="text-xs text-gray-400 italic">
+      <div id="empty-comments-msg" class="text-xs text-gray-400 dark:text-gray-500 italic">
         // nessun commento presente nel log.
       </div>
     {% endfor %}
   </div>
 
   <!-- Add Comment Form -->
-  <div class="pt-4 border-t border-gray-200">
+  <div class="pt-4 border-t border-gray-200 dark:border-gray-800">
     {% if user.is_authenticated %}
-      <h4 class="text-xs font-mono uppercase text-gray-500 tracking-wider mb-3">// aggiungi_commento</h4>
+      <h4 class="text-xs font-mono uppercase text-gray-500 dark:text-gray-400 tracking-wider mb-3">// aggiungi_commento</h4>
       <form action="{% url 'blog_app:add_comment' post.id %}" method="post" class="space-y-3">
         {% csrf_token %}
-        <div class="font-mono text-xs sm:text-sm [&_textarea]:w-full [&_textarea]:p-2 [&_textarea]:border [&_textarea]:border-gray-600 [&_textarea]:bg-transparent [&_textarea]:focus:outline-none [&_textarea]:box-border">
+        <div class="font-mono text-xs sm:text-sm [&_textarea]:w-full [&_textarea]:p-2 [&_textarea]:border [&_textarea]:border-gray-600 dark:[&_textarea]:border-gray-700 [&_textarea]:bg-transparent [&_textarea]:text-gray-800 dark:[&_textarea]:text-gray-200 [&_textarea]:focus:outline-none [&_textarea]:focus:border-black dark:[&_textarea]:focus:border-gray-400 [&_textarea]:box-border">
           {{ comment_form.as_p }}
         </div>
-        <button type="submit" class="text-xs font-mono text-gray-700 hover:text-black underline underline-offset-4 cursor-pointer py-1">
+        <button type="submit" class="text-xs font-mono text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white underline underline-offset-4 cursor-pointer py-1">
           [+ invia_commento]
         </button>
       </form>
     {% else %}
-      <p class="text-xs text-gray-500">
-        // <a href="{% url 'accounts:login' %}" class="underline text-gray-700 hover:text-black">accedi</a> per inserire un commento.
+      <p class="text-xs text-gray-500 dark:text-gray-400">
+        // <a href="{% url 'accounts:login' %}" class="underline text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white">accedi</a> per inserire un commento.
       </p>
     {% endif %}
   </div>
@@ -286,7 +285,7 @@
             const container = document.getElementById('comments-container');
             if (container) {
               container.innerHTML = `
-                <div id="empty-comments-msg" class="text-xs text-gray-400 italic">
+                <div id="empty-comments-msg" class="text-xs text-gray-400 dark:text-gray-500 italic">
                   // nessun commento presente nel log.
                 </div>
               `;

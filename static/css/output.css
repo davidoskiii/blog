@@ -7,6 +7,7 @@
     sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
     monospace;
+    --color-red-400: oklch(70.4% 0.191 22.216);
     --color-red-500: oklch(63.7% 0.237 25.331);
     --color-red-600: oklch(57.7% 0.245 27.325);
     --color-indigo-500: oklch(58.5% 0.233 277.117);
@@ -18,6 +19,8 @@
     --color-gray-600: oklch(44.6% 0.03 256.802);
     --color-gray-700: oklch(37.3% 0.034 259.733);
     --color-gray-800: oklch(27.8% 0.033 256.848);
+    --color-gray-900: oklch(21% 0.034 264.665);
+    --color-gray-950: oklch(13% 0.028 261.692);
     --color-black: #000;
     --color-white: #fff;
     --spacing: 0.25rem;
@@ -868,6 +871,82 @@
       line-height: var(--tw-leading, var(--text-3xl--line-height));
     }
   }
+  @media (prefers-color-scheme: dark) {
+    .dark\:border-gray-300 {
+      border-color: var(--color-gray-300);
+    }
+    .dark\:border-gray-600 {
+      border-color: var(--color-gray-600);
+    }
+    .dark\:border-gray-700 {
+      border-color: var(--color-gray-700);
+    }
+    .dark\:border-gray-800 {
+      border-color: var(--color-gray-800);
+    }
+    .dark\:border-gray-900 {
+      border-color: var(--color-gray-900);
+    }
+    .dark\:border-red-500 {
+      border-color: var(--color-red-500);
+    }
+    .dark\:bg-gray-900 {
+      background-color: var(--color-gray-900);
+    }
+    .dark\:bg-gray-950 {
+      background-color: var(--color-gray-950);
+    }
+    .dark\:text-gray-100 {
+      color: var(--color-gray-100);
+    }
+    .dark\:text-gray-200 {
+      color: var(--color-gray-200);
+    }
+    .dark\:text-gray-300 {
+      color: var(--color-gray-300);
+    }
+    .dark\:text-gray-400 {
+      color: var(--color-gray-400);
+    }
+    .dark\:text-gray-500 {
+      color: var(--color-gray-500);
+    }
+    .dark\:text-gray-600 {
+      color: var(--color-gray-600);
+    }
+    .dark\:text-red-400 {
+      color: var(--color-red-400);
+    }
+    .dark\:text-white {
+      color: var(--color-white);
+    }
+    .dark\:placeholder-gray-500::placeholder {
+      color: var(--color-gray-500);
+    }
+    @media (hover: hover) {
+      .dark\:hover\:border-gray-400:hover {
+        border-color: var(--color-gray-400);
+      }
+      .dark\:hover\:bg-gray-900:hover {
+        background-color: var(--color-gray-900);
+      }
+      .dark\:hover\:text-gray-100:hover {
+        color: var(--color-gray-100);
+      }
+      .dark\:hover\:text-gray-200:hover {
+        color: var(--color-gray-200);
+      }
+      .dark\:hover\:text-gray-300:hover {
+        color: var(--color-gray-300);
+      }
+      .dark\:hover\:text-white:hover {
+        color: var(--color-white);
+      }
+    }
+    .dark\:focus\:border-gray-400:focus {
+      border-color: var(--color-gray-400);
+    }
+  }
   .\[\&_a\]\:underline a {
     text-decoration-line: underline;
   }
@@ -877,6 +956,13 @@
   @media (hover: hover) {
     .\[\&_a\]\:hover\:text-black a:hover {
       color: var(--color-black);
+    }
+  }
+  @media (prefers-color-scheme: dark) {
+    @media (hover: hover) {
+      .dark\:\[\&_a\]\:hover\:text-white a:hover {
+        color: var(--color-white);
+      }
     }
   }
   .\[\&_blockquote\]\:my-4 blockquote {
@@ -895,6 +981,11 @@
   .\[\&_blockquote\]\:italic blockquote {
     font-style: italic;
   }
+  @media (prefers-color-scheme: dark) {
+    .dark\:\[\&_blockquote\]\:border-gray-500 blockquote {
+      border-color: var(--color-gray-500);
+    }
+  }
   .\[\&_code\]\:bg-gray-200 code {
     background-color: var(--color-gray-200);
   }
@@ -907,6 +998,14 @@
   .\[\&_code\]\:text-xs code {
     font-size: var(--text-xs);
     line-height: var(--tw-leading, var(--text-xs--line-height));
+  }
+  @media (prefers-color-scheme: dark) {
+    .dark\:\[\&_code\]\:bg-gray-800 code {
+      background-color: var(--color-gray-800);
+    }
+    .dark\:\[\&_code\]\:text-gray-200 code {
+      color: var(--color-gray-200);
+    }
   }
   .\[\&_figcaption\]\:-mt-4 figcaption {
     margin-top: calc(var(--spacing) * -4);
@@ -927,6 +1026,11 @@
   .\[\&_figcaption\]\:italic figcaption {
     font-style: italic;
   }
+  @media (prefers-color-scheme: dark) {
+    .dark\:\[\&_figcaption\]\:text-gray-400 figcaption {
+      color: var(--color-gray-400);
+    }
+  }
   .\[\&_figure\]\:mb-6 figure {
     margin-bottom: calc(var(--spacing) * 6);
   }
@@ -944,6 +1048,9 @@
     --tw-font-weight: var(--font-weight-bold);
     font-weight: var(--font-weight-bold);
   }
+  .\[\&_h1\]\:text-gray-900 h1 {
+    color: var(--color-gray-900);
+  }
   .\[\&_h1\]\:uppercase h1 {
     text-transform: uppercase;
   }
@@ -951,6 +1058,11 @@
     .\[\&_h1\]\:sm\:text-2xl h1 {
       font-size: var(--text-2xl);
       line-height: var(--tw-leading, var(--text-2xl--line-height));
+    }
+  }
+  @media (prefers-color-scheme: dark) {
+    .dark\:\[\&_h1\]\:text-gray-100 h1 {
+      color: var(--color-gray-100);
     }
   }
   .\[\&_h2\]\:mt-5 h2 {
@@ -967,8 +1079,16 @@
     --tw-font-weight: var(--font-weight-bold);
     font-weight: var(--font-weight-bold);
   }
+  .\[\&_h2\]\:text-gray-900 h2 {
+    color: var(--color-gray-900);
+  }
   .\[\&_h2\]\:uppercase h2 {
     text-transform: uppercase;
+  }
+  @media (prefers-color-scheme: dark) {
+    .dark\:\[\&_h2\]\:text-gray-100 h2 {
+      color: var(--color-gray-100);
+    }
   }
   .\[\&_h3\]\:mt-4 h3 {
     margin-top: calc(var(--spacing) * 4);
@@ -983,6 +1103,14 @@
   .\[\&_h3\]\:font-bold h3 {
     --tw-font-weight: var(--font-weight-bold);
     font-weight: var(--font-weight-bold);
+  }
+  .\[\&_h3\]\:text-gray-900 h3 {
+    color: var(--color-gray-900);
+  }
+  @media (prefers-color-scheme: dark) {
+    .dark\:\[\&_h3\]\:text-gray-100 h3 {
+      color: var(--color-gray-100);
+    }
   }
   .\[\&_img\]\:mx-auto img {
     margin-inline: auto;
@@ -1009,6 +1137,11 @@
   @media (width >= 48rem) {
     .\[\&_img\]\:md\:max-w-lg img {
       max-width: var(--container-lg);
+    }
+  }
+  @media (prefers-color-scheme: dark) {
+    .dark\:\[\&_img\]\:border-gray-700 img {
+      border-color: var(--color-gray-700);
     }
   }
   .\[\&_input\]\:w-full input {
@@ -1041,6 +1174,17 @@
     --tw-outline-style: none;
     outline-style: none;
   }
+  @media (prefers-color-scheme: dark) {
+    .dark\:\[\&_input\]\:border-gray-700 input {
+      border-color: var(--color-gray-700);
+    }
+    .dark\:\[\&_input\]\:text-gray-200 input {
+      color: var(--color-gray-200);
+    }
+    .dark\:\[\&_input\]\:focus\:border-gray-400 input:focus {
+      border-color: var(--color-gray-400);
+    }
+  }
   .\[\&_label\]\:mb-1 label {
     margin-bottom: var(--spacing);
   }
@@ -1056,6 +1200,11 @@
   }
   .\[\&_label\]\:uppercase label {
     text-transform: uppercase;
+  }
+  @media (prefers-color-scheme: dark) {
+    .dark\:\[\&_label\]\:text-gray-400 label {
+      color: var(--color-gray-400);
+    }
   }
   .\[\&_li\]\:mb-1 li {
     margin-bottom: var(--spacing);
@@ -1078,6 +1227,13 @@
   .\[\&_pre\]\:overflow-x-auto pre {
     overflow-x: auto;
   }
+  .\[\&_pre\]\:border pre {
+    border-style: var(--tw-border-style);
+    border-width: 1px;
+  }
+  .\[\&_pre\]\:border-gray-700 pre {
+    border-color: var(--color-gray-700);
+  }
   .\[\&_pre\]\:bg-gray-800 pre {
     background-color: var(--color-gray-800);
   }
@@ -1086,6 +1242,11 @@
   }
   .\[\&_pre\]\:text-gray-100 pre {
     color: var(--color-gray-100);
+  }
+  @media (prefers-color-scheme: dark) {
+    .dark\:\[\&_pre\]\:bg-gray-900 pre {
+      background-color: var(--color-gray-900);
+    }
   }
   .\[\&_textarea\]\:box-border textarea {
     box-sizing: border-box;
@@ -1119,6 +1280,17 @@
   .\[\&_textarea\]\:focus\:outline-none textarea:focus {
     --tw-outline-style: none;
     outline-style: none;
+  }
+  @media (prefers-color-scheme: dark) {
+    .dark\:\[\&_textarea\]\:border-gray-700 textarea {
+      border-color: var(--color-gray-700);
+    }
+    .dark\:\[\&_textarea\]\:text-gray-200 textarea {
+      color: var(--color-gray-200);
+    }
+    .dark\:\[\&_textarea\]\:focus\:border-gray-400 textarea:focus {
+      border-color: var(--color-gray-400);
+    }
   }
   .\[\&_ul\]\:mb-4 ul {
     margin-bottom: calc(var(--spacing) * 4);
