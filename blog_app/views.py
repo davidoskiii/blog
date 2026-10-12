@@ -23,8 +23,9 @@ def superuser_required(view_func):
 
 
 def posts(request):
-    """List all published posts in a flat chronological log."""
-    posts = Post.objects.filter(is_published=True).order_by('-date').prefetch_related('tags')
+    """List all posts in a flat chronological log."""
+    # Fetches all posts, newest first, and grabs their tags in one query
+    posts = Post.objects.all().order_by('-date').prefetch_related('tags')
     
     context = {
         'posts': posts,
@@ -36,8 +37,9 @@ def search_posts(request):
     posts = []
 
     if query:
+        # Search posts where title or text contains the query, and prefetch tags
         posts = Post.objects.filter(
-            Q(is_published=True) & (Q(title__icontains=query) | Q(text__icontains=query))
+            Q(title__icontains=query) | Q(text__icontains=query)
         ).order_by('-date').prefetch_related('tags').distinct()
 
     context = {
@@ -47,9 +49,9 @@ def search_posts(request):
     return render(request, 'blog_app/search_results.html', context)
 
 def tag(request, tag_id):
-    """Show all published posts containing a specific tag."""
+    """Show all posts containing a specific tag."""
     tag = get_object_or_404(Tag, id=tag_id)
-    posts = tag.posts.filter(is_published=True)
+    posts = tag.posts.all()
     
     context = {
         'tag': tag,
@@ -58,20 +60,12 @@ def tag(request, tag_id):
     return render(request, 'blog_app/tag.html', context)
 
 def post(request, post_id):
-    """Individual Post view open to everyone if published, or superusers if draft."""
+    """Individual Post view open to everyone."""
     post = get_object_or_404(Post, id=post_id)
-    
-    # Restrict unpublished post access to superusers
-    if not post.is_published and not (request.user.is_authenticated and request.user.is_superuser):
-        context = {
-            'error_title': 'Contenuto non disponibile',
-            'error_message': 'Questo post è in fase di bozza e non è ancora stato pubblicato.'
-        }
-        return render(request, 'blog_app/403.html', context, status=403)
-
     comments = post.comments.all()
     comment_form = CommentForm()
     
+    # Check if the current user has already liked this post
     is_liked = False
     if request.user.is_authenticated:
         is_liked = post.likes.filter(id=request.user.id).exists()
@@ -83,16 +77,6 @@ def post(request, post_id):
         'is_liked': is_liked,
     }
     return render(request, 'blog_app/post.html', context)
-
-@superuser_required
-def drafts(request):
-    """List all draft posts for superusers."""
-    posts = Post.objects.filter(is_published=False).order_by('-date').prefetch_related('tags')
-    
-    context = {
-        'posts': posts,
-    }
-    return render(request, 'blog_app/drafts.html', context)
 
 
 @login_required
