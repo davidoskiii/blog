@@ -22,7 +22,7 @@ class Post(models.Model):
     title = models.CharField(max_length=200)
     text = models.TextField()
     date = models.DateTimeField(auto_now_add=True)
-    is_published = models.BooleanField(default=False)
+    is_published = models.BooleanField(default=True)
     
     tags = models.ManyToManyField(Tag, related_name='posts', blank=True)
     likes = models.ManyToManyField(User, related_name='liked_posts', blank=True)
