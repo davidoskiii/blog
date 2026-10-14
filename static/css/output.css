@@ -1185,6 +1185,41 @@
       border-color: var(--color-gray-400);
     }
   }
+  .\[\&_input\[type\=\"checkbox\"\]\]\:mr-2 input[type="checkbox"] {
+    margin-right: calc(var(--spacing) * 2);
+  }
+  .\[\&_input\[type\=\"checkbox\"\]\]\:h-4 input[type="checkbox"] {
+    height: calc(var(--spacing) * 4);
+  }
+  .\[\&_input\[type\=\"checkbox\"\]\]\:w-4 input[type="checkbox"] {
+    width: calc(var(--spacing) * 4);
+  }
+  .\[\&_input\[type\=\"checkbox\"\]\]\:rounded input[type="checkbox"] {
+    border-radius: 0.25rem;
+  }
+  .\[\&_input\[type\=\"checkbox\"\]\]\:border-gray-300 input[type="checkbox"] {
+    border-color: var(--color-gray-300);
+  }
+  .\[\&_input\[type\=\"checkbox\"\]\]\:bg-gray-100 input[type="checkbox"] {
+    background-color: var(--color-gray-100);
+  }
+  .\[\&_input\[type\=\"checkbox\"\]\]\:align-middle input[type="checkbox"] {
+    vertical-align: middle;
+  }
+  .\[\&_input\[type\=\"checkbox\"\]\]\:accent-gray-700 input[type="checkbox"] {
+    accent-color: var(--color-gray-700);
+  }
+  @media (prefers-color-scheme: dark) {
+    .dark\:\[\&_input\[type\=\"checkbox\"\]\]\:border-gray-600 input[type="checkbox"] {
+      border-color: var(--color-gray-600);
+    }
+    .dark\:\[\&_input\[type\=\"checkbox\"\]\]\:bg-gray-800 input[type="checkbox"] {
+      background-color: var(--color-gray-800);
+    }
+    .dark\:\[\&_input\[type\=\"checkbox\"\]\]\:accent-gray-300 input[type="checkbox"] {
+      accent-color: var(--color-gray-300);
+    }
+  }
   .\[\&_label\]\:mb-1 label {
     margin-bottom: var(--spacing);
   }
