@@ -1,6 +1,9 @@
 {% extends 'blog_app/base.html' %}
+{% load blog_extras %}
 
 {% block content %}
+
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
 <!-- Back Navigation -->
 <div class="mb-6 sm:mb-8 font-mono text-xs">
@@ -44,7 +47,7 @@
     </div>
   </header>
 
-<!-- Post Body Text with Dark Mode Typography -->
+
 <div class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm sm:text-base mb-8 font-mono break-words
   [&_p]:mb-4 
   [&_h1]:text-xl [&_h1]:sm:text-2xl [&_h1]:font-bold [&_h1]:mt-6 [&_h1]:mb-3 [&_h1]:uppercase [&_h1]:text-gray-900 dark:[&_h1]:text-gray-100 
@@ -59,20 +62,10 @@
   [&_pre]:bg-gray-800 dark:[&_pre]:bg-gray-900 [&_pre]:text-gray-100 [&_pre]:p-4 [&_pre]:overflow-x-auto [&_pre]:mb-4 [&_pre]:border [&_pre]:border-gray-700
   [&_img]:max-w-full [&_img]:md:max-w-lg [&_img]:h-auto [&_img]:block [&_img]:my-6 [&_img]:mx-auto [&_img]:border [&_img]:border-gray-300 dark:[&_img]:border-gray-700
   [&_figure]:mb-6
-  [&_figcaption]:text-xs [&_figcaption]:text-gray-500 dark:[&_figcaption]:text-gray-400 [&_figcaption]:text-center [&_figcaption]:-mt-4 [&_figcaption]:mb-6 [&_figcaption]:italic
-  /* --- Checkbox Styling --- */
-  [&_input[type="checkbox"]]:h-4 
-  [&_input[type="checkbox"]]:w-4 
-  [&_input[type="checkbox"]]:rounded 
-  [&_input[type="checkbox"]]:border-gray-300 
-  dark:[&_input[type="checkbox"]]:border-gray-600 
-  [&_input[type="checkbox"]]:bg-gray-100 
-  dark:[&_input[type="checkbox"]]:bg-gray-800 
-  [&_input[type="checkbox"]]:accent-gray-700 
-  dark:[&_input[type="checkbox"]]:accent-gray-300 
-  [&_input[type="checkbox"]]:mr-2 
-  [&_input[type="checkbox"]]:align-middle">
-  {{ post.text|safe }}
+  [&_figcaption]:text-xs [&_figcaption]:text-gray-500 dark:[&_figcaption]:text-gray-400 [&_figcaption]:text-center [&_figcaption]:-mt-4 [&_figcaption]:mb-6 [&_figcaption]:italic">
+
+  {{ post.text|parse_components }}
+
 </div>
 
   <!-- LIKES & ACTIONS BAR -->
