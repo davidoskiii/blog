@@ -49,12 +49,32 @@
           {{ post.title }}
         </a>
 
-        <!-- Mobile Info Button (Visible only on small screens) -->
-        <details class="sm:hidden relative inline-block ml-2 align-middle">
-          <summary class="list-none cursor-pointer text-[10px] font-mono text-gray-500 dark:text-gray-400 border border-gray-400 dark:border-gray-600 px-1 py-0.5 rounded hover:text-black dark:hover:text-white hover:border-black dark:hover:border-gray-400 transition-colors select-none">
+        <!-- Mobile Info Button (Alpine.js popover with click-outside dismiss) -->
+        <div 
+          class="sm:hidden relative inline-block ml-2 align-middle"
+          x-data="{ open: false }"
+          @click.outside="open = false"
+          @keydown.escape.window="open = false"
+        >
+          <button 
+            @click="open = !open" 
+            type="button" 
+            class="text-[10px] font-mono text-gray-500 dark:text-gray-400 border border-gray-400 dark:border-gray-600 px-1 py-0.5 rounded hover:text-black dark:hover:text-white hover:border-black dark:hover:border-gray-400 transition-colors select-none cursor-pointer"
+          >
             [i]
-          </summary>
-          <div class="absolute right-0 top-full mt-1 z-30 bg-white dark:bg-gray-900 border border-gray-600 dark:border-gray-700 p-2 shadow-sm text-xs text-gray-400 dark:text-gray-300 font-mono w-48 break-words">
+          </button>
+
+          <div 
+            x-show="open" 
+            x-transition:enter="transition ease-out duration-100"
+            x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-75"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-95"
+            class="absolute right-0 top-full mt-1 z-30 bg-white dark:bg-gray-900 border border-gray-600 dark:border-gray-700 p-2 shadow-md text-xs text-gray-400 dark:text-gray-300 font-mono w-48 break-words"
+            style="display: none;"
+          >
             {% if post.tags.all %}
               [TAG: 
               {% for tag in post.tags.all %}
@@ -65,7 +85,7 @@
               -
             {% endif %}
           </div>
-        </details>
+        </div>
       </div>
 
       <!-- Tags Column: Hidden on small viewports, visible on sm: and up -->
@@ -92,16 +112,5 @@
 <div class="mt-12 sm:mt-16 text-xs font-mono text-gray-500 dark:text-gray-400">
   // fine delle voci ....
 </div>
-
-<!-- Auto-close Details Script -->
-<script>
-  document.addEventListener('click', (event) => {
-    document.querySelectorAll('details[open]').forEach((details) => {
-      if (!details.contains(event.target)) {
-        details.removeAttribute('open');
-      }
-    });
-  });
-</script>
 
 {% endblock content %}

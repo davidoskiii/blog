@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link rel="stylesheet" href="{% static 'css/output.css' %}">
     <title>{% block title %}BLOG_SYS // TERMINALE{% endblock %}</title>
 </head>
@@ -72,66 +73,83 @@
         </div>
 
         <!-- Mobile Dropdown Menu (Hidden on md and up) -->
-        <div class="block md:hidden relative">
-          <details class="group">
-            <summary class="list-none cursor-pointer text-xs font-bold text-gray-700 dark:text-gray-200 border border-gray-600 dark:border-gray-600 px-2 py-1 select-none hover:bg-gray-100 dark:hover:bg-gray-900">
-              [MENU]
-            </summary>
+        <div 
+          class="block md:hidden relative"
+          x-data="{ open: false }"
+          @click.outside="open = false"
+          @keydown.escape.window="open = false"
+        >
+          <button 
+            @click="open = !open" 
+            type="button" 
+            class="text-xs font-bold text-gray-700 dark:text-gray-200 border border-gray-600 dark:border-gray-600 px-2 py-1 select-none hover:bg-gray-100 dark:hover:bg-gray-900 cursor-pointer"
+          >
+            [MENU]
+          </button>
 
-            <div class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-900 border border-gray-600 dark:border-gray-700 shadow-lg p-3 space-y-3 z-50 text-xs">
+          <div 
+            x-show="open" 
+            x-transition:enter="transition ease-out duration-100"
+            x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-75"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-95"
+            class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-900 border border-gray-600 dark:border-gray-700 shadow-lg p-3 space-y-3 z-50 text-xs"
+            style="display: none;"
+          >
+            <div>
+              <a href="{% url 'blog_app:posts' %}" class="block text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white underline">
+                &gt; archivio
+              </a>
+            </div>
+
+            {% if user.is_superuser %}
               <div>
-                <a href="{% url 'blog_app:posts' %}" class="block text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white underline">
-                  &gt; archivio
+                <a href="{% url 'blog_app:new_post' %}" class="block text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white underline">
+                  &gt; + nuovo_post
                 </a>
               </div>
-
-              {% if user.is_superuser %}
-                <div>
-                  <a href="{% url 'blog_app:new_post' %}" class="block text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white underline">
-                    &gt; + nuovo_post
-                  </a>
-                </div>
-                <div>
-                  <a href="{% url 'blog_app:new_tag' %}" class="block text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white underline">
-                    &gt; + nuova_tag
-                  </a>
-                </div>
-              {% endif %}
-
-              <div class="pt-2 border-t border-gray-200 dark:border-gray-800">
-                <form action="{% url 'blog_app:search' %}" method="get" class="w-full">
-                  <input 
-                    type="text" 
-                    name="q" 
-                    value="{{ request.GET.q }}"
-                    placeholder="cerca..." 
-                    class="w-full bg-transparent border-b border-gray-600 dark:border-gray-600 text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 text-xs font-mono focus:outline-none px-1"
-                    required
-                  >
-                </form>
+              <div>
+                <a href="{% url 'blog_app:new_tag' %}" class="block text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white underline">
+                  &gt; + nuova_tag
+                </a>
               </div>
+            {% endif %}
 
-              <div class="pt-2 border-t border-gray-200 dark:border-gray-800 space-y-2">
-                {% if user.is_authenticated %}
-                  <div>
-                    <a href="{% url 'blog_app:profile' user.username %}" class="block text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white font-bold underline">
-                      &gt; profilo [@{{ user.username }}]
-                    </a>
-                  </div>
-                  <form action="{% url 'accounts:logout' %}" method="post">
-                    {% csrf_token %}
-                    <button type="submit" class="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white underline cursor-pointer w-full text-left">
-                      &gt; esci
-                    </button>
-                  </form>
-                {% else %}
-                  <a href="{% url 'accounts:login' %}" class="block text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white underline">
-                    &gt; accedi
-                  </a>
-                {% endif %}
-              </div>
+            <div class="pt-2 border-t border-gray-200 dark:border-gray-800">
+              <form action="{% url 'blog_app:search' %}" method="get" class="w-full">
+                <input 
+                  type="text" 
+                  name="q" 
+                  value="{{ request.GET.q }}"
+                  placeholder="cerca..." 
+                  class="w-full bg-transparent border-b border-gray-600 dark:border-gray-600 text-gray-700 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 text-xs font-mono focus:outline-none px-1"
+                  required
+                >
+              </form>
             </div>
-          </details>
+
+            <div class="pt-2 border-t border-gray-200 dark:border-gray-800 space-y-2">
+              {% if user.is_authenticated %}
+                <div>
+                  <a href="{% url 'blog_app:profile' user.username %}" class="block text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white font-bold underline">
+                    &gt; profilo [@{{ user.username }}]
+                  </a>
+                </div>
+                <form action="{% url 'accounts:logout' %}" method="post">
+                  {% csrf_token %}
+                  <button type="submit" class="text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white underline cursor-pointer w-full text-left">
+                    &gt; esci
+                  </button>
+                </form>
+              {% else %}
+                <a href="{% url 'accounts:login' %}" class="block text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white underline">
+                  &gt; accedi
+                </a>
+              {% endif %}
+            </div>
+          </div>
         </div>
 
       </nav>
