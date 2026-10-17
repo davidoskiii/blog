@@ -6,22 +6,23 @@
       active: 0, 
       total: {{ images|length }},
       autoplayTimer: null,
+      isPaused: {% if is_relative %}true{% else %}false{% endif %},
       touchStartX: 0,
       touchEndX: 0,
       isMaximized: false,
       
       next(manual = false) { 
         this.active = (this.active + 1) % this.total;
-        if (manual) this.resetAutoplay();
+        if (manual && !this.isPaused) this.resetAutoplay();
       },
       prev(manual = false) { 
         this.active = (this.active - 1 + this.total) % this.total;
-        if (manual) this.resetAutoplay();
+        if (manual && !this.isPaused) this.resetAutoplay();
       },
       
       startAutoplay() {
         this.stopAutoplay();
-        if (this.total > 1 && !this.isMaximized) {
+        if (this.total > 1 && !this.isMaximized && !this.isPaused) {
           this.autoplayTimer = setInterval(() => this.next(), 4000);
         }
       },
@@ -35,6 +36,14 @@
         this.stopAutoplay();
         this.startAutoplay();
       },
+      togglePause() {
+        this.isPaused = !this.isPaused;
+        if (this.isPaused) {
+          this.stopAutoplay();
+        } else {
+          this.startAutoplay();
+        }
+      },
       
       openLightbox() {
         this.stopAutoplay();
@@ -42,7 +51,7 @@
       },
       closeLightbox() {
         this.isMaximized = false;
-        this.startAutoplay();
+        if (!this.isPaused) this.startAutoplay();
       },
       
       handleTouchStart(e) {
@@ -62,8 +71,8 @@
       }
     }" 
     x-init="startAutoplay()"
-    @mouseenter="stopAutoplay()"
-    @mouseleave="if (!isMaximized) startAutoplay()"
+    @mouseenter="if (!isPaused) stopAutoplay()"
+    @mouseleave="if (!isMaximized && !isPaused) startAutoplay()"
     @touchstart="handleTouchStart($event)"
     @touchend="handleTouchEnd($event)"
     @keydown.escape.window="closeLightbox()"
@@ -72,17 +81,14 @@
     class="relative group max-w-full md:max-w-2xl mx-auto border border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 shadow-lg font-mono overflow-hidden select-none"
   >
     <!-- Slides Container -->
-    <div class="relative w-full bg-gray-200/50 dark:bg-black/40 {% if is_relative %}h-auto min-h-[250px]{% else %}h-[200px] sm:h-[320px]{% endif %}">
+    <div class="w-full bg-gray-200/50 dark:bg-black/40 {% if is_relative %}grid grid-cols-1 transition-[height] duration-300 ease-in-out{% else %}relative h-[200px] sm:h-[320px]{% endif %}">
       {% for image in images %}
         <div 
           x-show="active === {{ forloop.counter0 }}" 
-          x-transition:enter="transition ease-out duration-300"
+          x-transition:enter="transition ease-out duration-200"
           x-transition:enter-start="opacity-0 scale-95"
           x-transition:enter-end="opacity-100 scale-100"
-          x-transition:leave="transition ease-in duration-200"
-          x-transition:leave-start="opacity-100 scale-100"
-          x-transition:leave-end="opacity-0 scale-95"
-          class="{% if is_relative %}relative flex items-center justify-center p-2{% else %}absolute inset-0 flex items-center justify-center p-2{% endif %}"
+          class="{% if is_relative %}col-start-1 row-start-1 w-full flex items-center justify-center p-2{% else %}absolute inset-0 flex items-center justify-center p-2{% endif %}"
         >
           <img 
             src="{{ image }}" 
@@ -116,9 +122,21 @@
       </button>
     {% endif %}
 
-    <!-- Slide Indicator badge -->
-    <div class="absolute bottom-2 right-2 bg-gray-200/80 dark:bg-black/70 px-2 py-0.5 border border-gray-400 dark:border-gray-700 text-[10px] text-gray-700 dark:text-gray-300 z-10">
-      [<span x-text="active + 1" class="text-black dark:text-white font-bold"></span>/<span>{{ images|length }}</span>]
+    <!-- Slide Indicator Badge & Pause Toggle -->
+    <div class="absolute bottom-2 right-2 flex items-center space-x-1.5 bg-gray-200/80 dark:bg-black/70 px-2 py-0.5 border border-gray-400 dark:border-gray-700 text-[10px] text-gray-700 dark:text-gray-300 z-10">
+      {% if images|length > 1 %}
+        <button 
+          @click="togglePause()" 
+          type="button" 
+          class="hover:text-black dark:hover:text-white font-bold cursor-pointer transition-colors"
+          title="Pause/Play autoplay"
+        >
+          <span x-text="isPaused ? '[>]' : '[||]'"></span>
+        </button>
+      {% endif %}
+      <span>
+        [<span x-text="active + 1" class="text-black dark:text-white font-bold"></span>/<span>{{ images|length }}</span>]
+      </span>
     </div>
 
     <!-- Full-Screen Lightbox Modal -->
