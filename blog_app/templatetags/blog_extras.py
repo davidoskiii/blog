@@ -7,23 +7,20 @@ register = template.Library()
 
 
 def parse_kv_attrs(attr_str):
-    """Extract key-value pairs (src, caption) AND boolean flags (relative, checked)."""
+    """Extract key-value pairs (src, caption, speed) AND boolean flags (relative, relative-y, relative-x, paused)."""
     attrs = {}
     if not attr_str:
         return attrs
         
-    # Match key="value", key='value', or standalone key flags
-    token_pattern = r'(\w+)=(?:"([^"]*)"|\'([^\']*)\')|(\w+)'
+    token_pattern = r'([\w-]+)=(?:"([^"]*)"|\'([^\']*)\')|([\w-]+)'
     
     for match in re.finditer(token_pattern, attr_str):
         key = match.group(1) or match.group(4)
-        key = key.lower()
+        key = key.lower().replace('-', '_')  # Normalizes relative-y to relative_y
         
         if match.group(4):
-            # Standalone boolean flag (e.g. 'relative')
             attrs[key] = True
         else:
-            # Key-value pair
             attrs[key] = match.group(2) if match.group(2) is not None else match.group(3)
             
     return attrs
@@ -38,11 +35,21 @@ def handle_carousel(attrs):
     
     if not images:
         return ""
+
+    # Parse custom speed (in milliseconds), fallback to 4000ms
+    try:
+        speed = int(attrs.get('speed', 4000))
+    except (ValueError, TypeError):
+        speed = 4000
         
     return render_to_string('blog_app/components/carousel.html', {
         'images': images,
         'caption': attrs.get('caption', attrs.get('alt', '')),
         'is_relative': attrs.get('relative', False) is True,
+        'is_relative_y': attrs.get('relative_y', False) is True,
+        'is_relative_x': attrs.get('relative_x', False) is True,
+        'is_paused': attrs.get('paused', False) is True,
+        'speed': speed,
     })
 
 
@@ -56,11 +63,10 @@ def handle_image(attrs):
         'src': src,
         'alt': attrs.get('alt', attrs.get('caption', 'Blog Image')),
         'caption': attrs.get('caption', ''),
-        'is_relative': attrs.get('relative', False) is True,
+        'is_relative': attrs.get('relative', False) is True or attrs.get('relative_y', False) is True or attrs.get('relative_x', False) is True,
     })
 
 
-# --- Component Registry ---
 COMPONENTS = {
     'carousel': handle_carousel,
     'image': handle_image,
