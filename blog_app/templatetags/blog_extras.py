@@ -7,7 +7,7 @@ register = template.Library()
 
 
 def parse_kv_attrs(attr_str):
-    """Extract key-value pairs (src, caption, speed) AND boolean flags (relative, relative-y, relative-x, paused)."""
+    """Extract key-value pairs (src, caption, speed) AND boolean flags (relative, paused)."""
     attrs = {}
     if not attr_str:
         return attrs
@@ -16,7 +16,7 @@ def parse_kv_attrs(attr_str):
     
     for match in re.finditer(token_pattern, attr_str):
         key = match.group(1) or match.group(4)
-        key = key.lower().replace('-', '_')  # Normalizes relative-y to relative_y
+        key = key.lower().replace('-', '_')
         
         if match.group(4):
             attrs[key] = True
@@ -46,8 +46,6 @@ def handle_carousel(attrs):
         'images': images,
         'caption': attrs.get('caption', attrs.get('alt', '')),
         'is_relative': attrs.get('relative', False) is True,
-        'is_relative_y': attrs.get('relative_y', False) is True,
-        'is_relative_x': attrs.get('relative_x', False) is True,
         'is_paused': attrs.get('paused', False) is True,
         'speed': speed,
     })
@@ -63,7 +61,7 @@ def handle_image(attrs):
         'src': src,
         'alt': attrs.get('alt', attrs.get('caption', 'Blog Image')),
         'caption': attrs.get('caption', ''),
-        'is_relative': attrs.get('relative', False) is True or attrs.get('relative_y', False) is True or attrs.get('relative_x', False) is True,
+        'is_relative': attrs.get('relative', False) is True,
     })
 
 
