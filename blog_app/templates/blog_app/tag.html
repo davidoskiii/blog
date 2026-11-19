@@ -4,60 +4,120 @@
 
 <!-- Back Navigation -->
 <div class="mb-6 sm:mb-8 font-mono text-xs">
-  <a href="{% url 'blog_app:posts' %}" class="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white underline underline-offset-4">
+  <a href="{% url 'blog_app:posts' %}" class="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white underline underline-offset-4 py-1 inline-block whitespace-nowrap">
     &lt;-- back_to_log_archive
   </a>
 </div>
 
-<div class="w-full font-mono">
-
-  <!-- Terminal Header Signal -->
-  <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start border-b border-gray-600 dark:border-gray-700 pb-3 mb-6 sm:mb-8 gap-3">
-    <div class="space-y-1">
-      <h1 class="text-xl sm:text-2xl font-mono uppercase tracking-wider text-gray-700 dark:text-gray-200 break-words">
-        TAG <span class="text-xs font-normal lowercase text-gray-400 dark:text-gray-500">// [{{ tag.name|lower }}]</span>
+<!-- Terminal Header Signal -->
+<div class="flex flex-col sm:flex-row sm:justify-between sm:items-start border-b border-gray-500 dark:border-gray-700 pb-3 mb-6 gap-3 font-mono">
+  <div class="space-y-1.5 max-w-2xl min-w-0">
+    <div class="flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
+      <h1 class="text-2xl sm:text-3xl font-mono uppercase tracking-wider text-gray-700 dark:text-gray-200 break-words min-w-0">
+        #{{ tag.name|lower }}
       </h1>
-      {% if tag.description %}
-        <div class="text-xs text-gray-500 dark:text-gray-400 break-words">
-          // DESCRIZIONE: <span class="font-mono font-bold text-gray-600 dark:text-gray-300 text-xs sm:text-sm">
-            {{ tag.description }}
-          </span>
-        </div>
-      {% endif %}
-      <div class="text-xs text-gray-500 dark:text-gray-400">
-        // TOTALE_VOCI: [<strong class="text-gray-800 dark:text-gray-200 font-bold">{{ posts.count }}</strong>]
-      </div>
+      <span class="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap shrink-0">[{{ posts.count }} voci]</span>
     </div>
 
-    {% if user.is_superuser %}
-      <a href="{% url 'blog_app:edit_tag' tag.id %}" class="text-xs text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white underline underline-offset-4 shrink-0 self-start sm:self-auto">
-        + modifica_tag
-      </a>
+    {% if tag.description %}
+      <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed break-words">
+        {{ tag.description }}
+      </p>
     {% endif %}
   </div>
 
-  <!-- Posts Flat Log List -->
-  <div class="space-y-4 text-xs">
-    {% for post in posts %}
-      <div class="border-b border-gray-200 dark:border-gray-800 pb-3">
-        <div class="flex flex-wrap items-baseline gap-2 sm:gap-3">
-          <span class="text-gray-500 dark:text-gray-400 font-mono text-xs shrink-0">[{{ post.date|date:"Y.m.d" }}]</span>
-          <a href="{% url 'blog_app:post' post.id %}" class="font-mono font-bold text-gray-700 dark:text-gray-200 hover:text-black dark:hover:text-white hover:underline uppercase tracking-wide text-xs sm:text-sm break-words">
-            {{ post.title }}
-          </a>
-        </div>
+  {% if user.is_superuser %}
+    <div class="flex items-center gap-3 text-xs font-mono shrink-0 self-start sm:self-auto">
+      <a href="{% url 'blog_app:edit_tag' tag.id %}" class="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white underline underline-offset-4 py-1 whitespace-nowrap">
+        [+ modifica]
+      </a>
+    </div>
+  {% endif %}
+</div>
 
-        <p class="text-gray-600 dark:text-gray-400 font-mono text-xs mt-1.5 line-clamp-2 leading-relaxed break-words">
-          {{ post.text|striptags }}
-        </p>
-      </div>
-    {% empty %}
-      <div class="text-xs text-gray-400 dark:text-gray-500 italic">
-        // nessun post registrato con questo tag.
-      </div>
-    {% endfor %}
+<!-- Log Table Container -->
+<div class="w-full font-mono text-xs sm:text-sm">
+  
+  <!-- Table Header -->
+  <div class="grid grid-cols-12 gap-2 pb-1 text-xs text-gray-500 dark:text-gray-400 font-mono border-b border-gray-500 dark:border-gray-700 uppercase tracking-wider mb-1">
+    <div class="col-span-4 sm:col-span-3 md:col-span-2">data</div>
+    <div class="col-span-8 sm:col-span-6 md:col-span-6">titolo</div>
+    <div class="hidden sm:block sm:col-span-3 md:col-span-4">tags</div>
   </div>
 
+  <!-- Table Body -->
+  {% for post in posts %}
+    <div class="grid grid-cols-12 gap-2 py-1 sm:py-0.5 border-b border-gray-100 dark:border-gray-900 sm:border-b-0 items-baseline">
+      
+      <!-- Date Column with Conditional Year -->
+      <div class="col-span-4 sm:col-span-3 md:col-span-2 font-mono text-xs sm:text-sm shrink-0 whitespace-nowrap text-gray-500 dark:text-gray-400">
+        {% ifchanged post.date|date:"Y" %}
+          [{{ post.date|date:"Y" }} {{ post.date|date:"b d" }}]
+        {% else %}
+          [<span class="invisible select-none">2026</span> {{ post.date|date:"b d" }}]
+        {% endifchanged %}
+      </div>
+
+      <!-- Title Column with Mobile Info Button -->
+      <div class="col-span-8 sm:col-span-6 md:col-span-6 flex items-baseline justify-between sm:block relative min-w-0">
+        <a href="{% url 'blog_app:post' post.id %}" class="font-mono font-bold text-gray-700 dark:text-gray-200 hover:text-black dark:hover:text-white hover:underline underline-offset-4 uppercase tracking-wide text-sm sm:text-base leading-snug break-words min-w-0">
+          {{ post.title }}
+        </a>
+
+        <!-- Mobile Info Button / Placeholder centrato su 3ch -->
+        {% if post.tags.all %}
+          <div 
+            class="sm:hidden relative inline-block ml-2 align-middle shrink-0 w-[3ch] text-center"
+            x-data="{ open: false }"
+            @click.outside="open = false"
+            @keydown.escape.window="open = false"
+          >
+            <button 
+              @click="open = !open" 
+              type="button" 
+              class="text-[10px] font-mono text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white select-none cursor-pointer whitespace-nowrap"
+            >
+              [i]
+            </button>
+
+            <div 
+              x-show="open" 
+              x-transition:enter="transition ease-out duration-100"
+              x-transition:enter-start="opacity-0 scale-95"
+              x-transition:enter-end="opacity-100 scale-100"
+              x-transition:leave="transition ease-in duration-75"
+              x-transition:leave-start="opacity-100 scale-100"
+              x-transition:leave-end="opacity-0 scale-95"
+              class="absolute right-0 top-full mt-1 z-30 bg-white dark:bg-gray-900 border border-gray-500 dark:border-gray-700 p-2 shadow-md text-xs text-left text-gray-500 dark:text-gray-300 font-mono w-48 max-w-[calc(100vw-2rem)] break-words"
+              style="display: none;"
+            >
+              [{% for t in post.tags.all %}<a href="{% url 'blog_app:tag' t.id %}" class="hover:text-black dark:hover:text-white hover:underline whitespace-nowrap">{{ t.name|lower }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}]
+            </div>
+          </div>
+        {% else %}
+          <span class="sm:hidden text-[10px] font-mono text-gray-400 dark:text-gray-600 select-none ml-2 align-middle shrink-0 w-[3ch] text-center">-</span>
+        {% endif %}
+      </div>
+
+      <!-- Tags Column: Hidden on small viewports, visible on sm: and up -->
+      <div class="hidden sm:block sm:col-span-3 md:col-span-4 text-xs text-gray-400 dark:text-gray-400 font-mono break-words">
+        {% if post.tags.all %}
+          [{% for t in post.tags.all %}<a href="{% url 'blog_app:tag' t.id %}" class="hover:text-black dark:hover:text-white hover:underline underline-offset-4 whitespace-nowrap">{{ t.name|lower }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}]
+        {% else %}
+          -
+        {% endif %}
+      </div>
+
+    </div>
+  {% empty %}
+    <p class="text-xs text-gray-500 dark:text-gray-400 italic py-2">// nessun post registrato con questo tag.</p>
+  {% endfor %}
+
+</div>
+
+<!-- Terminal Footer Signal -->
+<div class="mt-12 sm:mt-16 text-xs font-mono text-gray-500 dark:text-gray-400">
+  // fine delle voci ....
 </div>
 
 {% endblock content %}

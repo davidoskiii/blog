@@ -2,40 +2,48 @@
 
 {% block content %}
 
-<div class="mb-8 font-mono text-xs">
-  <a href="{% url 'blog_app:profile' user.username %}" class="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white underline underline-offset-4">
-    &lt;-- cancel_and_back_to_profile
+<!-- Back Navigation -->
+<div class="mb-6 sm:mb-8 font-mono text-xs">
+  <a href="{% url 'blog_app:profile' user.username %}" class="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white underline underline-offset-4 py-1 inline-block whitespace-nowrap">
+    &lt;-- back_to_profile
   </a>
 </div>
 
 <div class="w-full font-mono">
-  <div class="border-b border-gray-600 dark:border-gray-700 pb-2 mb-8">
-    <h1 class="text-2xl uppercase tracking-wider text-gray-700 dark:text-gray-200 font-bold">
-      MODIFICA_PROFILO <span class="text-xs font-normal lowercase text-gray-400 dark:text-gray-500">// @{{ user.username }}</span>
+  <!-- Section Header -->
+  <header class="border-b border-gray-500 dark:border-gray-700 pb-3 mb-6 sm:mb-8">
+    <h1 class="text-xl sm:text-2xl font-mono font-bold uppercase tracking-wider text-gray-800 dark:text-gray-100 break-words">
+      MODIFICA_PROFILO <span class="block sm:inline text-xs font-normal lowercase text-gray-400 dark:text-gray-500 mt-0.5 sm:mt-0">// @{{ user.username }}</span>
     </h1>
-  </div>
+  </header>
 
-  <form method="post" action="{% url 'blog_app:edit_profile' %}" class="space-y-6 text-xs">
+  <form method="post" action="{% url 'blog_app:edit_profile' %}" class="space-y-6 text-xs w-full">
     {% csrf_token %}
     
-    <div>
-      <label class="block text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Nome</label>
-      <input type="text" name="first_name" value="{{ user.first_name }}" class="w-full p-2 border border-gray-600 dark:border-gray-700 bg-transparent text-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:border-black dark:focus:border-gray-400">
+    <div class="space-y-4">
+      <div>
+        <label class="block text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Nome</label>
+        <input type="text" name="first_name" value="{{ user.first_name }}" class="w-full p-2.5 border border-gray-500 dark:border-gray-700 bg-transparent text-base sm:text-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:border-black dark:focus:border-gray-300 box-border">
+      </div>
+
+      <div>
+        <label class="block text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Cognome</label>
+        <input type="text" name="last_name" value="{{ user.last_name }}" class="w-full p-2.5 border border-gray-500 dark:border-gray-700 bg-transparent text-base sm:text-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:border-black dark:focus:border-gray-300 box-border">
+      </div>
+
+      <div>
+        <label class="block text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1.5">Biografia</label>
+        <textarea name="bio" rows="4" class="w-full p-2.5 border border-gray-500 dark:border-gray-700 bg-transparent text-base sm:text-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:border-black dark:focus:border-gray-300 box-border">{{ profile.bio|default:"" }}</textarea>
+      </div>
     </div>
 
-    <div>
-      <label class="block text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Cognome</label>
-      <input type="text" name="last_name" value="{{ user.last_name }}" class="w-full p-2 border border-gray-600 dark:border-gray-700 bg-transparent text-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:border-black dark:focus:border-gray-400">
-    </div>
-
-    <div>
-      <label class="block text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Biografia</label>
-      <textarea name="bio" rows="4" class="w-full p-2 border border-gray-600 dark:border-gray-700 bg-transparent text-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:border-black dark:focus:border-gray-400">{{ profile.bio|default:"" }}</textarea>
-    </div>
-
-    <div class="pt-4 border-t border-gray-300 dark:border-gray-800 flex justify-end space-x-4">
-      <a href="{% url 'blog_app:profile' user.username %}" class="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white underline">annulla</a>
-      <button type="submit" class="font-bold text-gray-800 dark:text-gray-200 hover:text-black dark:hover:text-white underline">[salva_profilo]</button>
+    <div class="pt-5 border-t border-gray-200 dark:border-gray-800 flex items-center justify-end gap-4">
+      <a href="{% url 'blog_app:profile' user.username %}" class="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white underline underline-offset-4 py-1 whitespace-nowrap">
+        [annulla]
+      </a>
+      <button type="submit" class="font-bold text-gray-800 dark:text-gray-200 hover:text-black dark:hover:text-white underline underline-offset-4 cursor-pointer py-1 whitespace-nowrap">
+        [salva]
+      </button>
     </div>
   </form>
 </div>

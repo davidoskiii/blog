@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+
 class Tag(models.Model):
     """A Tag for filtering posts."""
     name = models.CharField(max_length=50, unique=True)
@@ -23,9 +24,7 @@ class Post(models.Model):
     text = models.TextField()
     date = models.DateTimeField(auto_now_add=True)
     
-    # Switched from ForeignKey(Category) to ManyToManyField(Tag)
     tags = models.ManyToManyField(Tag, related_name='posts', blank=True)
-    
     likes = models.ManyToManyField(User, related_name='liked_posts', blank=True)
 
     class Meta:
@@ -36,6 +35,20 @@ class Post(models.Model):
 
     def total_likes(self):
         return self.likes.count()
+
+
+class Folder(models.Model):
+    """Una Folder (playlist) che raggruppa diversi post."""
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(blank=True, null=True)
+    posts = models.ManyToManyField(Post, related_name='folders', blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
 
 
 class Comment(models.Model):
@@ -59,6 +72,7 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f"Profile: {self.user.username}"
+
 
 # Signal: Automatically create a UserProfile whenever a User is created
 @receiver(post_save, sender=User)

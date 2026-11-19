@@ -1,0 +1,56 @@
+{% extends 'blog_app/base.html' %}
+
+{% block content %}
+
+<div class="flex flex-col sm:flex-row sm:items-baseline justify-between border-b border-gray-500 dark:border-gray-700 pb-3 mb-6 gap-2 sm:gap-4 font-mono">
+  <h1 class="text-xl sm:text-3xl font-mono uppercase tracking-wider text-gray-700 dark:text-gray-200 break-words">
+    FOLDERS <span class="block sm:inline text-xs sm:text-sm font-normal lowercase text-gray-400 dark:text-gray-500 mt-0.5 sm:mt-0">// directory &amp; serie</span>
+  </h1>
+
+  {% if user.is_superuser %}
+    <a href="{% url 'blog_app:new_folder' %}" class="text-xs text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white underline underline-offset-4 py-1 shrink-0 self-start sm:self-auto whitespace-nowrap">
+      [+ nuova]
+    </a>
+  {% endif %}
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4 font-mono">
+  {% for folder in folders %}
+    <div class="group relative border border-gray-400 dark:border-gray-700 p-3.5 sm:p-4 flex flex-col justify-between hover:border-black dark:hover:border-gray-400 transition-colors min-w-0">
+      <div>
+        <div class="flex items-baseline justify-between gap-2 border-b border-gray-200 dark:border-gray-800 pb-2 mb-2">
+          <a href="{% url 'blog_app:folder' folder.id %}" class="after:absolute after:inset-0 font-bold text-sm sm:text-base text-gray-800 dark:text-gray-200 group-hover:underline underline-offset-4 break-words min-w-0">
+            /{{ folder.name|lower }}
+          </a>
+          <span class="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 shrink-0 whitespace-nowrap">
+            [{{ folder.posts.count }} voci]
+          </span>
+        </div>
+
+        {% if folder.description %}
+          <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed break-words">
+            {{ folder.description }}
+          </p>
+        {% else %}
+          <p class="text-xs text-gray-400 dark:text-gray-600 italic">
+            // nessuna descrizione.
+          </p>
+        {% endif %}
+      </div>
+
+      {% if user.is_superuser %}
+        <div class="mt-3 sm:mt-4 pt-2 border-t border-gray-100 dark:border-gray-900 flex justify-end text-xs">
+          <a href="{% url 'blog_app:edit_folder' folder.id %}" class="relative z-10 text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white underline underline-offset-4 whitespace-nowrap py-0.5">
+            [+ modifica]
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  {% empty %}
+    <p class="text-xs text-gray-500 dark:text-gray-400 italic py-2 col-span-full">
+      // nessuna folder configurata nel sistema.
+    </p>
+  {% endfor %}
+</div>
+
+{% endblock content %}

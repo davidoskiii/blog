@@ -1,10 +1,13 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 
-# Stessa classe Tailwind usata per PostForm, CategoryForm e CommentForm
-TAILWIND_INPUT_CLASS = (
-    'w-full px-3 py-2 border border-gray-300 rounded-lg text-sm '
-    'focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500'
+INPUT_CLASSES = (
+    'w-full font-mono text-base sm:text-sm p-2.5 bg-transparent '
+    'border border-gray-500 dark:border-gray-700 '
+    'text-gray-800 dark:text-gray-200 '
+    'placeholder-gray-400 dark:placeholder-gray-500 '
+    'focus:outline-none focus:border-black dark:focus:border-gray-300 '
+    'box-border'
 )
 
 
@@ -12,11 +15,11 @@ class CustomLoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
-            field.widget.attrs['class'] = TAILWIND_INPUT_CLASS
+            field.widget.attrs['class'] = INPUT_CLASSES
 
 
 class CustomRegisterForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
-            field.widget.attrs['class'] = TAILWIND_INPUT_CLASS
+            field.widget.attrs['class'] = INPUT_CLASSES

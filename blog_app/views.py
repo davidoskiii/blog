@@ -1,16 +1,41 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.db.models import Q
-from django.contrib.auth.models import User
-from django.contrib.auth.decorators import user_passes_test, login_required
 from functools import wraps
-from django.http import HttpResponseForbidden, JsonResponse
+from urllib.parse import urlparse, parse_qs
 
-from .models import Post, Tag, Comment, UserProfile
-from .forms import PostForm, TagForm, CommentForm
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
+from django.db.models import Q, Count
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+
+from .models import Post, Tag, Folder, Comment, UserProfile
+from .forms import PostForm, TagForm, FolderForm, CommentForm
+
+
+def _redirect_to_post(request, post_id):
+    """Redirect al post preservando l'eventuale parametro ?folder=<id>."""
+    url = reverse('blog_app:post', kwargs={'post_id': post_id})
+    
+    # 1. Controlla prima POST o GET espliciti
+    folder_id = request.POST.get('folder') or request.GET.get('folder')
+    
+    # 2. Altrimenti estrai ?folder=... dall'URL di provenienza (HTTP_REFERER)
+    if not folder_id:
+        referer = request.META.get('HTTP_REFERER', '')
+        if referer:
+            query_params = parse_qs(urlparse(referer).query)
+            folder_list = query_params.get('folder')
+            if folder_list:
+                folder_id = folder_list[0]
+
+    if folder_id and str(folder_id).isdigit():
+        return redirect(f"{url}?folder={folder_id}")
+    return redirect(url)
+
 
 def superuser_required(view_func):
     @wraps(view_func)
-    @login_required  # Redirects unauthenticated users to login
+    @login_required
     def _wrapped_view(request, *args, **kwargs):
         if not request.user.is_superuser:
             context = {
@@ -21,10 +46,19 @@ def superuser_required(view_func):
         return view_func(request, *args, **kwargs)
     return _wrapped_view
 
+def index(request):
+    """Pagina iniziale: introduzione al progetto, primo post consigliato e ultimi 3 post."""
+    first_post = Post.objects.all().order_by('date', 'id').prefetch_related('tags', 'folders').first()
+    recent_posts = Post.objects.all().order_by('-date', '-id').prefetch_related('tags')[:3]
+
+    context = {
+        'first_post': first_post,
+        'recent_posts': recent_posts,
+    }
+    return render(request, 'blog_app/index.html', context)
 
 def posts(request):
     """List all posts in a flat chronological log."""
-    # Fetches all posts, newest first, and grabs their tags in one query
     posts = Post.objects.all().order_by('-date').prefetch_related('tags')
     
     context = {
@@ -32,12 +66,12 @@ def posts(request):
     }
     return render(request, 'blog_app/posts.html', context)
 
+
 def search_posts(request):
     query = request.GET.get('q', '').strip()
     posts = []
 
     if query:
-        # Search posts where title or text contains the query, and prefetch tags
         posts = Post.objects.filter(
             Q(title__icontains=query) | Q(text__icontains=query)
         ).order_by('-date').prefetch_related('tags').distinct()
@@ -48,10 +82,15 @@ def search_posts(request):
     }
     return render(request, 'blog_app/search_results.html', context)
 
+def tags(request):
+    """Mostra tutti i tag con il conteggio dei post associati."""
+    all_tags = Tag.objects.annotate(post_count=Count('posts')).order_by('name')
+    return render(request, 'blog_app/tags.html', {'tags': all_tags})
+
 def tag(request, tag_id):
     """Show all posts containing a specific tag."""
     tag = get_object_or_404(Tag, id=tag_id)
-    posts = tag.posts.all()
+    posts = tag.posts.all().order_by('-date')
     
     context = {
         'tag': tag,
@@ -59,22 +98,101 @@ def tag(request, tag_id):
     }
     return render(request, 'blog_app/tag.html', context)
 
+
+# --- FOLDERS CRUD & VIEWS ---
+
+def folders(request):
+    """Mostra tutte le folders."""
+    all_folders = Folder.objects.all().prefetch_related('posts')
+    return render(request, 'blog_app/folders.html', {'folders': all_folders})
+
+
+def folder(request, folder_id):
+    """Mostra tutti i post di una folder in ordine cronologico."""
+    folder = get_object_or_404(Folder, id=folder_id)
+    posts = folder.posts.all().order_by('date', 'id').prefetch_related('tags')
+    return render(request, 'blog_app/folder.html', {'folder': folder, 'posts': posts})
+
+
+@superuser_required
+def new_folder(request):
+    if request.method != 'POST':
+        form = FolderForm()
+    else:
+        form = FolderForm(data=request.POST)
+        if form.is_valid():
+            new_f = form.save()
+            return redirect('blog_app:folder', folder_id=new_f.id)
+
+    return render(request, 'blog_app/new_folder.html', {'form': form})
+
+
+@superuser_required
+def edit_folder(request, folder_id):
+    folder = get_object_or_404(Folder, id=folder_id)
+    if request.method != 'POST':
+        form = FolderForm(instance=folder)
+    else:
+        form = FolderForm(instance=folder, data=request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('blog_app:folder', folder_id=folder.id)
+
+    return render(request, 'blog_app/edit_folder.html', {'folder': folder, 'form': form})
+
+
+@superuser_required
+def delete_folder(request, folder_id):
+    folder = get_object_or_404(Folder, id=folder_id)
+    if request.method == 'POST':
+        folder.delete()
+    return redirect('blog_app:folders')
+
+
+# --- POST DETAIL & INTERACTIONS ---
+
 def post(request, post_id):
-    """Individual Post view open to everyone."""
+    """Individual Post view with optional Folder navigation context."""
     post = get_object_or_404(Post, id=post_id)
     comments = post.comments.all()
     comment_form = CommentForm()
     
-    # Check if the current user has already liked this post
     is_liked = False
     if request.user.is_authenticated:
         is_liked = post.likes.filter(id=request.user.id).exists()
+
+    # Gestione contesto Folder (?folder=<id>)
+    active_folder = None
+    prev_post = None
+    next_post = None
+    post_folders = post.folders.all()
+
+    folder_id = request.GET.get('folder')
+    if folder_id and folder_id.isdigit():
+        active_folder = post_folders.filter(id=int(folder_id)).first()
+
+    if active_folder:
+        folder_posts = list(active_folder.posts.all().order_by('date', 'id'))
+        try:
+            idx = folder_posts.index(post)
+            if idx > 0:
+                prev_post = folder_posts[idx - 1]
+            if idx < len(folder_posts) - 1:
+                next_post = folder_posts[idx + 1]
+        except ValueError:
+            pass
+
+    other_folders = post_folders.exclude(id=active_folder.id) if active_folder else post_folders
 
     context = {
         'post': post,
         'comments': comments,
         'comment_form': comment_form,
         'is_liked': is_liked,
+        'active_folder': active_folder,
+        'prev_post': prev_post,
+        'next_post': next_post,
+        'other_folders': other_folders,
     }
     return render(request, 'blog_app/post.html', context)
 
@@ -92,13 +210,13 @@ def add_comment(request, post_id):
             comment.author = request.user
             comment.save()
 
-    return redirect('blog_app:post', post_id=post.id)
+    return _redirect_to_post(request, post.id)
+
 
 @login_required
 def edit_comment(request, comment_id):
     comment = get_object_or_404(Comment, id=comment_id)
     
-    # Verifica che l'utente sia l'autore
     if comment.author != request.user:
         return JsonResponse({'status': 'error', 'message': 'Non autorizzato'}, status=403)
         
@@ -110,11 +228,11 @@ def edit_comment(request, comment_id):
             return JsonResponse({'status': 'ok', 'text': comment.text})
         return JsonResponse({'status': 'error', 'message': 'Il testo non può essere vuoto'}, status=400)
 
+
 @login_required
 def delete_comment(request, comment_id):
     comment = get_object_or_404(Comment, id=comment_id)
     
-    # Verifica che l'utente sia l'autore
     if comment.author != request.user:
         return JsonResponse({'status': 'error', 'message': 'Non autorizzato'}, status=403)
         
@@ -129,32 +247,33 @@ def like_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
 
     if post.likes.filter(id=request.user.id).exists():
-        post.likes.remove(request.user)  # Unlike
+        post.likes.remove(request.user)
     else:
-        post.likes.add(request.user)     # Like
+        post.likes.add(request.user)
 
-    return redirect('blog_app:post', post_id=post.id)
+    return _redirect_to_post(request, post.id)
+
+
+# --- POSTS & TAGS CRUD ---
 
 @superuser_required
 def new_post(request):
     """Create Post"""
-
     if request.method != 'POST':
-        # No data submitted; create blank form
         form = PostForm()
     else:
-        # Data submitted; process data
         form = PostForm(data=request.POST) 
 
         if form.is_valid():
             post = form.save(commit=False)
             post.author = request.user
             post.save()
-            form.save_m2m()  # Saves ManyToMany fields like tags
+            form.save_m2m()
             return redirect('blog_app:posts')
 
     context = {'form': form}
     return render(request, 'blog_app/new_post.html', context)
+
 
 @superuser_required
 def edit_post(request, post_id):
@@ -162,17 +281,16 @@ def edit_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
 
     if request.method != 'POST':
-        # Initial request; pre-fill form with the current post data
         form = PostForm(instance=post)
     else:
-        # POST data submitted; process data
         form = PostForm(instance=post, data=request.POST)
         if form.is_valid():
             form.save()
-            return redirect('blog_app:post', post_id=post.id)
+            return _redirect_to_post(request, post.id)
 
     context = {'post': post, 'form': form}
     return render(request, 'blog_app/edit_post.html', context)
+
 
 @superuser_required
 def delete_post(request, post_id):
@@ -183,6 +301,7 @@ def delete_post(request, post_id):
         post.delete()
         
     return redirect('blog_app:posts')
+
 
 @superuser_required
 def edit_tag(request, tag_id):
@@ -200,6 +319,7 @@ def edit_tag(request, tag_id):
     context = {'tag': tag, 'form': form}
     return render(request, 'blog_app/edit_tag.html', context)
 
+
 @superuser_required
 def delete_tag(request, tag_id):
     """Delete a tag."""
@@ -209,6 +329,7 @@ def delete_tag(request, tag_id):
         tag.delete()
         
     return redirect('blog_app:posts')
+
 
 @superuser_required
 def new_tag(request):
@@ -224,22 +345,17 @@ def new_tag(request):
     context = {'form': form}
     return render(request, 'blog_app/new_tag.html', context)
 
+
+# --- USER PROFILE ---
+
 def user_profile(request, username):
     profile_user = get_object_or_404(User, username=username)
-    
-    # Safety fallback for existing users created before the signal was added
     profile, _ = UserProfile.objects.get_or_create(user=profile_user)
     
-    # Fetch user's comments
     comments = Comment.objects.filter(author=profile_user).order_by('-date')
-    
-    # Fetch posts authored by this user if they are a superuser
     posts = Post.objects.filter(author=profile_user).order_by('-date') if profile_user.is_superuser else []
-    
-    # Fetch saved posts
     saved_posts = profile.saved_posts.all().order_by('-date')
     
-    # Check if currently logged-in user has saved this profile's post list (if visiting own profile)
     context = {
         'profile_user': profile_user,
         'profile': profile,
@@ -260,7 +376,7 @@ def toggle_save_post(request, post_id):
     else:
         profile.saved_posts.add(post)
         
-    return redirect(request.META.get('HTTP_REFERER', 'blog_app:posts'))
+    return _redirect_to_post(request, post.id)
 
 
 @login_required
@@ -272,12 +388,10 @@ def edit_profile(request):
         first_name = request.POST.get('first_name', '')
         last_name = request.POST.get('last_name', '')
         
-        # Save user details
         request.user.first_name = first_name
         request.user.last_name = last_name
         request.user.save()
         
-        # Save profile details
         profile.bio = bio
         profile.save()
         

@@ -1,0 +1,127 @@
+{% extends 'blog_app/base.html' %}
+
+{% block content %}
+
+<!-- Back Navigation -->
+<div class="mb-6 sm:mb-8 font-mono text-xs">
+  <a href="{% url 'blog_app:folders' %}" class="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white underline underline-offset-4 py-1 inline-block whitespace-nowrap">
+    &lt;-- back_to_folders
+  </a>
+</div>
+
+<!-- Terminal Header Signal -->
+<div class="flex flex-col sm:flex-row sm:justify-between sm:items-start border-b border-gray-500 dark:border-gray-700 pb-3 mb-6 gap-3 font-mono">
+  <div class="space-y-1.5 max-w-2xl min-w-0">
+    <div class="flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
+      <h1 class="text-2xl sm:text-3xl font-mono uppercase tracking-wider text-gray-700 dark:text-gray-200 break-words min-w-0">
+        /{{ folder.name|lower }}
+      </h1>
+      <span class="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap shrink-0">[{{ posts.count }} voci]</span>
+    </div>
+
+    {% if folder.description %}
+      <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed break-words">
+        {{ folder.description }}
+      </p>
+    {% endif %}
+  </div>
+
+  {% if user.is_superuser %}
+    <div class="flex items-center gap-3 text-xs font-mono shrink-0 self-start sm:self-auto">
+      <a href="{% url 'blog_app:edit_folder' folder.id %}" class="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white underline underline-offset-4 py-1 whitespace-nowrap">
+        [+ modifica]
+      </a>
+      <form action="{% url 'blog_app:delete_folder' folder.id %}" method="post" onsubmit="return confirm('Eliminare la folder {{ folder.name }}? I post al suo interno NON verranno eliminati.');" class="inline">
+        {% csrf_token %}
+        <button type="submit" class="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white underline underline-offset-4 py-1 cursor-pointer whitespace-nowrap">
+          [- elimina]
+        </button>
+      </form>
+    </div>
+  {% endif %}
+</div>
+
+<!-- Log Table Container -->
+<div class="w-full font-mono text-xs sm:text-sm">
+  
+  <!-- Table Header -->
+  <div class="grid grid-cols-12 gap-2 pb-1 text-xs text-gray-500 dark:text-gray-400 font-mono border-b border-gray-500 dark:border-gray-700 uppercase tracking-wider mb-1">
+    <div class="col-span-4 sm:col-span-3 md:col-span-2">data</div>
+    <div class="col-span-8 sm:col-span-6 md:col-span-6">titolo</div>
+    <div class="hidden sm:block sm:col-span-3 md:col-span-4">tags</div>
+  </div>
+
+  <!-- Table Body -->
+  {% for post in posts %}
+    <div class="grid grid-cols-12 gap-2 py-1 sm:py-0.5 border-b border-gray-100 dark:border-gray-900 sm:border-b-0 items-baseline">
+      
+      <!-- Date Column -->
+      <div class="col-span-4 sm:col-span-3 md:col-span-2 font-mono text-xs sm:text-sm shrink-0 whitespace-nowrap text-gray-500 dark:text-gray-400">
+        {% ifchanged post.date|date:"Y" %}
+          [{{ post.date|date:"Y" }} {{ post.date|date:"b d" }}]
+        {% else %}
+          [<span class="invisible select-none">2026</span> {{ post.date|date:"b d" }}]
+        {% endifchanged %}
+      </div>
+
+      <!-- Title Column -->
+      <div class="col-span-8 sm:col-span-6 md:col-span-6 flex items-baseline justify-between sm:block relative min-w-0">
+        <div class="min-w-0 break-words leading-snug">
+          <span class="text-gray-400 dark:text-gray-500 font-mono text-xs sm:text-sm mr-1 select-none whitespace-nowrap">[{{ forloop.counter|stringformat:"02d" }}]</span>
+          <a href="{% url 'blog_app:post' post.id %}?folder={{ folder.id }}" class="font-mono font-bold text-gray-700 dark:text-gray-200 hover:text-black dark:hover:text-white hover:underline underline-offset-4 uppercase tracking-wide text-sm sm:text-base break-words">
+            {{ post.title }}
+          </a>
+        </div>
+
+        <!-- Mobile Info Button / Placeholder centrato su 3ch -->
+        {% if post.tags.all %}
+          <div 
+            class="sm:hidden relative inline-block ml-2 align-middle shrink-0 w-[3ch] text-center"
+            x-data="{ open: false }"
+            @click.outside="open = false"
+            @keydown.escape.window="open = false"
+          >
+            <button 
+              @click="open = !open" 
+              type="button" 
+              class="text-[10px] font-mono text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white select-none cursor-pointer whitespace-nowrap"
+            >
+              [i]
+            </button>
+
+            <div 
+              x-show="open" 
+              x-transition
+              class="absolute right-0 top-full mt-1 z-30 bg-white dark:bg-gray-900 border border-gray-500 dark:border-gray-700 p-2 shadow-md text-xs text-left text-gray-500 dark:text-gray-300 font-mono w-48 max-w-[calc(100vw-2rem)] break-words"
+              style="display: none;"
+            >
+              [{% for tag in post.tags.all %}<a href="{% url 'blog_app:tag' tag.id %}" class="hover:text-black dark:hover:text-white hover:underline whitespace-nowrap">{{ tag.name|lower }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}]
+            </div>
+          </div>
+        {% else %}
+          <span class="sm:hidden text-[10px] font-mono text-gray-400 dark:text-gray-600 select-none ml-2 align-middle shrink-0 w-[3ch] text-center">-</span>
+        {% endif %}
+      </div>
+
+      <!-- Tags Column -->
+      <div class="hidden sm:block sm:col-span-3 md:col-span-4 text-xs text-gray-400 dark:text-gray-400 font-mono break-words">
+        {% if post.tags.all %}
+          [{% for tag in post.tags.all %}<a href="{% url 'blog_app:tag' tag.id %}" class="hover:text-black dark:hover:text-white hover:underline underline-offset-4 whitespace-nowrap">{{ tag.name|lower }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}]
+        {% else %}
+          -
+        {% endif %}
+      </div>
+
+    </div>
+  {% empty %}
+    <p class="text-xs text-gray-500 dark:text-gray-400 italic py-2">// nessun post assegnato a questa folder.</p>
+  {% endfor %}
+
+</div>
+
+<!-- Terminal Footer Signal -->
+<div class="mt-12 sm:mt-16 text-xs font-mono text-gray-500 dark:text-gray-400">
+  // fine delle voci ....
+</div>
+
+{% endblock content %}

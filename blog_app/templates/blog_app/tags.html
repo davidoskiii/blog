@@ -1,0 +1,106 @@
+{% extends 'blog_app/base.html' %}
+
+{% block title %}Tags // Blog Personale{% endblock %}
+
+{% block content %}
+
+<!-- Header -->
+<div class="flex flex-col sm:flex-row sm:items-baseline justify-between border-b border-gray-500 dark:border-gray-700 pb-3 mb-6 gap-3 sm:gap-4 font-mono">
+  <h1 class="text-2xl sm:text-3xl font-mono uppercase tracking-wider text-gray-700 dark:text-gray-200 break-words">
+    TAGS <span class="block sm:inline text-xs sm:text-sm font-normal lowercase text-gray-400 dark:text-gray-500 mt-1 sm:mt-0">// indice</span>
+  </h1>
+
+  {% if user.is_superuser %}
+    <div class="flex flex-wrap items-center gap-3 text-xs font-mono shrink-0">
+      <a href="{% url 'blog_app:new_tag' %}" class="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white underline underline-offset-4 transition-colors py-1 whitespace-nowrap">
+        [+ nuova_tag]
+      </a>
+    </div>
+  {% endif %}
+</div>
+
+<!-- Tags Table Container -->
+<div class="w-full font-mono text-xs sm:text-sm">
+
+  <!-- Table Header -->
+  <div class="grid grid-cols-12 gap-2 pb-1 text-xs text-gray-500 dark:text-gray-400 font-mono border-b border-gray-500 dark:border-gray-700 uppercase tracking-wider mb-1">
+    <div class="col-span-7 sm:col-span-4 md:col-span-3">tag</div>
+    <div class="col-span-5 sm:col-span-2 md:col-span-2">voci</div>
+    <div class="hidden sm:block sm:col-span-6 md:col-span-7">descrizione</div>
+  </div>
+
+  <!-- Table Body -->
+  {% for tag in tags %}
+    {% with count=tag.post_count|default:0 %}
+      <div class="grid grid-cols-12 gap-2 py-1.5 sm:py-1 border-b border-gray-100 dark:border-gray-900 sm:border-b-0 items-baseline">
+
+        <!-- Tag Name Column -->
+        <div class="col-span-7 sm:col-span-4 md:col-span-3 min-w-0">
+          <a href="{% url 'blog_app:tag' tag.id %}" class="font-mono font-bold text-gray-700 dark:text-gray-200 hover:text-black dark:hover:text-white hover:underline underline-offset-4 lowercase tracking-wide text-sm sm:text-base leading-snug break-words">
+            #{{ tag.name|lower }}
+          </a>
+        </div>
+
+        <!-- Count Column + Mobile Description Popover -->
+        <div class="col-span-5 sm:col-span-2 md:col-span-2 flex items-baseline justify-between sm:block relative min-w-0">
+          <span class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap shrink-0">
+            [{{ count }} {% if count == 1 %}voce{% else %}voci{% endif %}]
+          </span>
+
+          {% if tag.description %}
+            <div
+              class="sm:hidden relative inline-block ml-2 align-middle shrink-0 w-[3ch] text-center"
+              x-data="{ open: false }"
+              @click.outside="open = false"
+              @keydown.escape.window="open = false"
+            >
+              <button
+                @click="open = !open"
+                type="button"
+                class="text-[10px] font-mono text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white select-none cursor-pointer whitespace-nowrap"
+              >
+                [i]
+              </button>
+
+              <div
+                x-show="open"
+                x-transition:enter="transition ease-out duration-100"
+                x-transition:enter-start="opacity-0 scale-95"
+                x-transition:enter-end="opacity-100 scale-100"
+                x-transition:leave="transition ease-in duration-75"
+                x-transition:leave-start="opacity-100 scale-100"
+                x-transition:leave-end="opacity-0 scale-95"
+                class="absolute right-0 top-full mt-1 z-30 bg-white dark:bg-gray-900 border border-gray-500 dark:border-gray-700 p-2 shadow-md text-xs text-left text-gray-500 dark:text-gray-300 font-mono w-52 max-w-[calc(100vw-2rem)] break-words"
+                style="display: none;"
+              >
+                {{ tag.description }}
+              </div>
+            </div>
+          {% else %}
+            <span class="sm:hidden text-[10px] font-mono text-gray-400 dark:text-gray-600 select-none ml-2 align-middle shrink-0 w-[3ch] text-center">-</span>
+          {% endif %}
+        </div>
+
+        <!-- Description Column (Desktop) -->
+        <div class="hidden sm:block sm:col-span-6 md:col-span-7 text-xs text-gray-500 dark:text-gray-400 font-mono break-words">
+          {% if tag.description %}
+            {{ tag.description }}
+          {% else %}
+            -
+          {% endif %}
+        </div>
+
+      </div>
+    {% endwith %}
+  {% empty %}
+    <p class="text-xs text-gray-500 dark:text-gray-400 italic py-2">// nessun tag registrato.</p>
+  {% endfor %}
+
+</div>
+
+<!-- Terminal Footer Signal -->
+<div class="mt-12 sm:mt-16 text-xs font-mono text-gray-500 dark:text-gray-400">
+  // fine dell'indice ....
+</div>
+
+{% endblock content %}
