@@ -1,127 +1,108 @@
 {% extends 'blog_app/base.html' %}
 
-{% block title %}Home // Archivio Personale{% endblock %}
-
 {% block content %}
 
-<div class="w-full font-mono space-y-10">
+<!-- Log Title Header -->
+<div class="flex flex-col sm:flex-row sm:items-baseline justify-between border-b border-gray-500 dark:border-gray-700 pb-3 mb-6 gap-3 sm:gap-4">
+  <h1 class="text-2xl sm:text-3xl font-mono uppercase tracking-wider text-gray-700 dark:text-gray-200 break-words">
+    LOG <span class="block sm:inline text-xs sm:text-sm font-normal lowercase text-gray-400 dark:text-gray-500 mt-1 sm:mt-0">// archivio</span>
+  </h1>
 
-  <!-- INTRODUZIONE AL PROGETTO -->
-  <section class="border-b border-gray-600 dark:border-gray-700 pb-6 mb-8 space-y-4">
-    <h1 class="text-2xl sm:text-3xl font-mono uppercase tracking-wider text-gray-700 dark:text-gray-200">
-      ARCHIVIO PERSONALE
-    </h1>
-
-    <div class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm sm:text-base font-mono break-words [&_p]:mb-4 [&_p:last-child]:mb-0">
-      <p>
-        Questo è un progetto personale dove scrivo articoli su argomenti che mi stanno a cuore, però senza troppo impegno: appunti, pensieri, analisi e cose che mi va di fermare su pagina senza la pressione di dover essere perfetto ogni volta.
-      </p>
-      <p>
-        È anche uno spazio di apprendimento in cui ho costruito il sito da solo — il codice è su
-        <a href="https://github.com/davidoskiii/blog" target="_blank" rel="noopener noreferrer" class="underline underline-offset-4 text-gray-800 dark:text-gray-100 hover:text-black dark:hover:text-white">
-          github.com/davidoskiii/blog
-        </a>
-        — e un posto in cui punto a migliorare la mia scrittura, stendendo idee che spero vivano e crescano insieme a me. In pratica, è un archivio personale.
-      </p>
-      <p class="text-gray-600 dark:text-gray-400">
-        Puoi esplorare i post nella sezione <a href="{% url 'blog_app:posts' %}" class="underline underline-offset-4 hover:text-black dark:hover:text-white">archivio</a>, dove sono elencati cronologicamente insieme; se preferisci una lettura guidata puoi passare dalle <a href="{% url 'blog_app:folders' %}" class="underline underline-offset-4 hover:text-black dark:hover:text-white">folders</a>, mentre se sei curioso di un argomento particolare puoi guardare i <a href="{% url 'blog_app:tags' %}" class="underline underline-offset-4 hover:text-black dark:hover:text-white">tags</a>.
-      </p>
+  {% if user.is_superuser %}
+    <div class="flex flex-wrap items-center gap-3 sm:space-x-4 text-xs font-mono shrink-0">
+      <a href="{% url 'blog_app:new_tag' %}" class="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white underline underline-offset-4 transition-colors py-1 whitespace-nowrap">
+        [+ nuova_tag]
+      </a>
+      <a href="{% url 'blog_app:new_post' %}" class="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white underline underline-offset-4 transition-colors py-1 whitespace-nowrap">
+        [+ nuovo_post]
+      </a>
     </div>
-  </section>
+  {% endif %}
+</div>
 
-  <!-- CARD PRIMO POST -->
-  <section class="space-y-4">
-    <div class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm sm:text-base font-mono break-words [&_p]:mb-4 [&_p:last-child]:mb-0">
-      <p>
-        Se vuoi capire da dove parte tutto e che taglio ha il progetto, vale la pena iniziare dal primo post pubblicato:
-      </p>
-    </div>
+<!-- Log Table Container -->
+<div class="w-full font-mono text-xs sm:text-sm">
+  
+  <!-- Table Header -->
+  <div class="grid grid-cols-12 gap-2 pb-1 text-xs text-gray-500 dark:text-gray-400 font-mono border-b border-gray-500 dark:border-gray-700 uppercase tracking-wider mb-1">
+    <div class="col-span-4 sm:col-span-3 md:col-span-2">data</div>
+    <div class="col-span-8 sm:col-span-6 md:col-span-6">titolo</div>
+    <div class="hidden sm:block sm:col-span-3 md:col-span-4">tags</div>
+  </div>
 
-    {% if first_post and first_post.pk %}
-      <div class="border border-gray-500 dark:border-gray-700 p-4 space-y-2">
-        <div class="flex flex-wrap items-baseline justify-between gap-2 text-xs text-gray-500 dark:text-gray-400">
-          <span>[{{ first_post.date|date:"Y.m.d" }}] // primo_post</span>
-          {% if first_post.tags.all %}
-            <span>
-              [TAG:
-              {% for tag in first_post.tags.all %}
-                <a href="{% url 'blog_app:tag' tag.id %}" class="underline hover:text-black dark:hover:text-white">{{ tag.name|lower }}</a>{% if not forloop.last %}, {% endif %}
-              {% endfor %}]
-            </span>
-          {% endif %}
-        </div>
-
-        <div>
-          <a href="{% url 'blog_app:post' first_post.pk %}" class="font-bold uppercase tracking-wide text-sm sm:text-base text-gray-800 dark:text-gray-100 hover:underline underline-offset-4 break-words">
-            {{ first_post.title }}
-          </a>
-        </div>
-
-        <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-2 break-words">
-          {{ first_post.text|striptags }}
-        </p>
-
-        <div class="pt-1 text-xs">
-          <a href="{% url 'blog_app:post' first_post.pk %}" class="underline underline-offset-4 text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white">
-            leggi_il_primo_post -&gt;
-          </a>
-        </div>
+  <!-- Table Body -->
+  {% for post in posts %}
+    <div class="grid grid-cols-12 gap-2 py-1 sm:py-0.5 border-b border-gray-100 dark:border-gray-900 sm:border-b-0 items-baseline">
+      
+      <!-- Date Column with Conditional Year -->
+      <div class="col-span-4 sm:col-span-3 md:col-span-2 font-mono text-xs sm:text-sm shrink-0 whitespace-nowrap text-gray-500 dark:text-gray-400">
+        {% ifchanged post.date|date:"Y" %}
+          [{{ post.date|date:"Y" }} {{ post.date|date:"b d" }}]
+        {% else %}
+          [<span class="invisible select-none">2026</span> {{ post.date|date:"b d" }}]
+        {% endifchanged %}
       </div>
-    {% else %}
-      <p class="text-xs text-gray-500 dark:text-gray-400 italic">
-        // nessun primo post disponibile al momento.
-      </p>
-    {% endif %}
-  </section>
 
-  <!-- ULTIMI POST (3 VOCI) -->
-  <section class="space-y-4">
-    <div class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm sm:text-base font-mono break-words [&_p]:mb-4 [&_p:last-child]:mb-0">
-      <p>
-        senno esplora gli ultimi post
-      </p>
-    </div>
+      <!-- Title Column with Mobile Info Button -->
+      <div class="col-span-8 sm:col-span-6 md:col-span-6 flex items-baseline justify-between sm:block relative min-w-0">
+        <a href="{% url 'blog_app:post' post.id %}" class="font-mono font-bold text-gray-700 dark:text-gray-200 hover:text-black dark:hover:text-white hover:underline underline-offset-4 uppercase tracking-wide text-sm sm:text-base leading-snug break-words min-w-0">
+          {{ post.title }}
+        </a>
 
-    {% if recent_posts %}
-      <!-- Flat Post Log List with Snippets -->
-      <div class="space-y-4 text-xs font-mono">
-        {% for post in recent_posts %}
-          <div class="border-b border-gray-200 dark:border-gray-800 pb-3.5">
-            <div class="grid grid-cols-[5.75rem_1fr] sm:flex sm:flex-wrap sm:items-baseline gap-2 sm:gap-x-3 sm:gap-y-1">
-              <span class="text-gray-500 dark:text-gray-400 font-mono text-[11px] sm:text-xs shrink-0 whitespace-nowrap">[{{ post.date|date:"Y.m.d" }}]</span>
+        <!-- Mobile Info Button / Placeholder centrato su 3ch -->
+        {% if post.tags.all %}
+          <div 
+            class="sm:hidden relative inline-block ml-2 align-middle shrink-0 w-[3ch] text-center"
+            x-data="{ open: false }"
+            @click.outside="open = false"
+            @keydown.escape.window="open = false"
+          >
+            <button 
+              @click="open = !open" 
+              type="button" 
+              class="text-[10px] font-mono text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white select-none cursor-pointer whitespace-nowrap"
+            >
+              [i]
+            </button>
 
-              <div class="min-w-0 flex flex-wrap items-baseline gap-x-2.5 gap-y-1">
-                <a href="{% url 'blog_app:post' post.id %}" class="font-mono font-bold text-gray-700 dark:text-gray-200 hover:text-black dark:hover:text-white hover:underline underline-offset-4 uppercase tracking-wide text-xs sm:text-sm break-words leading-snug">
-                  {{ post.title }}
-                </a>
-
-                {% if post.tags.all %}
-                  <span class="text-[11px] sm:text-xs text-gray-400 dark:text-gray-500 font-mono break-words">[{% for tag in post.tags.all %}<a href="{% url 'blog_app:tag' tag.id %}" class="hover:text-black dark:hover:text-white hover:underline underline-offset-4 whitespace-nowrap">{{ tag.name|lower }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}]</span>
-                {% endif %}
-              </div>
+            <div 
+              x-show="open" 
+              x-transition:enter="transition ease-out duration-100"
+              x-transition:enter-start="opacity-0 scale-95"
+              x-transition:enter-end="opacity-100 scale-100"
+              x-transition:leave="transition ease-in duration-75"
+              x-transition:leave-start="opacity-100 scale-100"
+              x-transition:leave-end="opacity-0 scale-95"
+              class="absolute right-0 top-full mt-1 z-30 bg-white dark:bg-gray-900 border border-gray-500 dark:border-gray-700 p-2 shadow-md text-xs text-left text-gray-500 dark:text-gray-300 font-mono w-48 max-w-[calc(100vw-2rem)] break-words"
+              style="display: none;"
+            >
+              [{% for tag in post.tags.all %}<a href="{% url 'blog_app:tag' tag.id %}" class="hover:text-black dark:hover:text-white hover:underline whitespace-nowrap">{{ tag.name|lower }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}]
             </div>
-
-            <p class="text-gray-600 dark:text-gray-400 font-mono text-xs mt-1.5 line-clamp-2 leading-relaxed break-words">
-              {{ post.text|striptags }}
-            </p>
           </div>
-        {% endfor %}
+        {% else %}
+          <span class="sm:hidden text-[10px] font-mono text-gray-400 dark:text-gray-600 select-none ml-2 align-middle shrink-0 w-[3ch] text-center">-</span>
+        {% endif %}
       </div>
 
-      <!-- Puntini che indicano la continuazione nell'archivio -->
-      <div class="pt-3 text-xs font-mono text-gray-400 dark:text-gray-500 flex items-center justify-between">
-        <span>. . . . . .</span>
-        <a href="{% url 'blog_app:posts' %}" class="underline underline-offset-4 text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white">
-          vai_all_archivio -&gt;
-        </a>
+      <!-- Tags Column: Hidden on small viewports, visible on sm: and up -->
+      <div class="hidden sm:block sm:col-span-3 md:col-span-4 text-xs text-gray-400 dark:text-gray-400 font-mono break-words">
+        {% if post.tags.all %}
+          [{% for tag in post.tags.all %}<a href="{% url 'blog_app:tag' tag.id %}" class="hover:text-black dark:hover:text-white hover:underline underline-offset-4 whitespace-nowrap">{{ tag.name|lower }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}]
+        {% else %}
+          -
+        {% endif %}
       </div>
-    {% else %}
-      <p class="text-xs text-gray-400 dark:text-gray-500 italic py-2">
-        // nessun post presente al momento.
-      </p>
-    {% endif %}
-  </section>
 
+    </div>
+  {% empty %}
+    <p class="text-xs text-gray-500 dark:text-gray-400 italic py-2">// nessun post registrato nell'archivio.</p>
+  {% endfor %}
+
+</div>
+
+<!-- Terminal Footer Signal -->
+<div class="mt-12 sm:mt-16 text-xs font-mono text-gray-500 dark:text-gray-400">
+  // fine delle voci ....
 </div>
 
 {% endblock content %}
